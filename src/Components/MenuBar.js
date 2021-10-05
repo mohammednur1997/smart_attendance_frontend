@@ -14,9 +14,8 @@ class MenuBar extends Component {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
                             <Link className="nav-link nav-font"  to="/">Login</Link>
-                            <Link className="nav-link nav-font"  to="/Dashboard">Dashboard</Link>
-                            <Link className="nav-link nav-font"  to="/project">project</Link>
                             <Link className="nav-link nav-font"  to="/AttendancePhoto">ATTENDANCE</Link>
+                            <Link className="nav-link nav-font"  to="/home">Dashboard</Link>
                            {/* <Link className="nav-link nav-font"  to="/RegistrationPhoto">REGISTRATION</Link>*/}
                         </Nav>
                     </Navbar.Collapse>

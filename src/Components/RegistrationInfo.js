@@ -21,7 +21,73 @@ class RegistrationInfo extends Component {
         }
     }
 
+    componentDidMount() {
+        let photoSrc= sessionStorage.getItem('photoSrc');
+        this.setState({photoSrc:photoSrc})
+    }
 
+
+    onRegistration=()=>{
+        let EName=this.state.EName;
+        let Eid=this.state.Eid;
+        let EMobile=this.state.EMobile;
+        if(EName.length===0){
+            RequiredName();
+        }
+        else if(Eid.length===0){
+            RequiredID();
+        }
+        else if(EMobile.length===0){
+            RequiredMobile();
+        }
+        else{
+            this.PhotoDesCal(EName,Eid,EMobile);
+        }
+    }
+
+
+
+    postRegistrationData=(name,employee_id,employee_mobile,photo_descriptor)=>{
+        this.setState({loaderDIV:""})
+        axios.post(onRegistrationURL(),onRegistrationBody(
+            name,employee_id,employee_mobile,photo_descriptor
+        )).then((res)=>{
+            this.setState({loaderDIV:"d-none"})
+            if(res.status===200 && res.data===1){
+                RegistrationSuccess();
+                this.setState({ Redirect:true})
+            }
+            else {
+                RequestFail();
+            }
+        }).catch((err)=>{
+            this.setState({loaderDIV:"d-none"})
+            RequestFail();
+        })
+    }
+
+
+    PhotoDesCal=(name,employee_id,employee_mobile)=>{
+        (async ()=>{
+            this.setState({loaderDIV:""})
+            await  faceapi.loadSsdMobilenetv1Model('/model1');
+            await  faceapi.loadFaceLandmarkModel('/model1');
+            await  faceapi.loadFaceRecognitionModel('/model1');
+            const img=document.getElementById('PersonPhoto')
+            const imgDes= await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
+            let photo_descriptor= JSON.stringify(Array.from(imgDes['descriptor']))
+            this.postRegistrationData(name,employee_id,employee_mobile,photo_descriptor)
+        })()
+    }
+
+
+    pageRedirect=()=>{
+        if(this.state.Redirect===true){
+            return (
+                <Redirect to="/"/>
+            )
+        }
+    }
 
     render() {
         return (

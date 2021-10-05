@@ -8,7 +8,9 @@ import RegistrationInfoPage from "../Pages/RegistrationInfoPage";
 import AttendanceInfoPage from "../Pages/AttendanceInfoPage";
 import LoginPage from "../Pages/LoginPage";
 import DashboardPage from "../Pages/DashboardPage";
-import ProjectsPage from "../Pages/ProjectsPage";
+import RecordPage from "../Pages/RecordPage";
+import VacationPage from "../Pages/Vacation";
+import EmployeeHomePage from "../Pages/EmployeeHomePage";
 
 class AppRouting extends Component {
     render() {
@@ -18,8 +20,10 @@ class AppRouting extends Component {
                 {/*    <Route exact path="/" render={(props) => <HomePage {...props} />}/>*/}
 
                     <Route exact path="/" render={(props) => <LoginPage {...props} />}/>
+                    <Route exact path="/home" render={(props) => <EmployeeHomePage {...props} />}/>
                     <Route exact path="/Dashboard" render={(props) => <DashboardPage {...props} />}/>
-                    <Route exact path="/project" render={(props) => <ProjectsPage {...props} />}/>
+                    <Route exact path="/record" render={(props) => <RecordPage {...props} />}/>
+                    <Route exact path="/vacation" render={(props) => <VacationPage {...props} />}/>
                     <Route exact path="/RegistrationPhoto" render={(props) => <RegistrationPhotoCapturePage {...props} />}/>
                     <Route exact path="/RegistrationInfo" render={(props) => <RegistrationInfoPage {...props} />}/>
 

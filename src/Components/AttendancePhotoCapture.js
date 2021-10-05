@@ -21,9 +21,9 @@ class AttendancePhotoCapture extends Component {
         }
         this.cameraRef=React.createRef();
     }
-    componentDidMount() {
+   /* componentDidMount() {
         this.OpenWebGLCamera();
-    }
+    }*/
     OpenWebGLCamera=()=>{
         JEEFACETRANSFERAPI.init({
             canvasId:"canvasID",

@@ -27,7 +27,90 @@ class AttendanceInfo extends Component {
 
         }
     }
+    componentDidMount() {
+        let photoSrc= sessionStorage.getItem('photoSrc');
+        this.setState({photoSrc:photoSrc})
+        let EmpList=  JSON.parse(localStorage.getItem('list'))
+        this.setState({EmpList:EmpList});
 
+        this.AttendancePhotoDesCal();
+
+
+    }
+
+
+    pageRedirect=()=>{
+        if(this.state.Redirect===true){
+            return (
+                <Redirect to="/"/>
+            )
+        }
+    }
+
+
+
+    AttendancePhotoDesCal=()=>{
+        (async ()=>{
+            this.setState({loaderDIV:""})
+            await  faceapi.loadSsdMobilenetv1Model('/model1');
+            await  faceapi.loadFaceLandmarkModel('/model1');
+            await  faceapi.loadFaceRecognitionModel('/model1');
+            const img=document.getElementById('PersonPhoto')
+            const imgDes= await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
+            this.setState({AttendancePhoto_descriptor:imgDes['descriptor']})
+            this.FaceMatchingResult();
+
+        })()
+    }
+
+
+
+    FaceMatchingResult=()=>{
+        let AttendancePhoto_descriptor= this.state.AttendancePhoto_descriptor;
+        let EmpList=this.state.EmpList;
+
+
+        for (let i = 0; i <= EmpList.length; i++) {
+            let Existing_descriptor =new Float32Array(JSON.parse(EmpList[i]['photo_descriptor']))
+            let distance= faceapi.euclideanDistance(AttendancePhoto_descriptor,Existing_descriptor);
+            let similarity=1-distance;
+            this.setState({distance:distance})
+            this.setState({similarity:similarity})
+            if(similarity>=0.6){
+                this.setState({result:"PASS"});
+                this.setState({
+                    EName:EmpList[i]['name'],
+                    Eid:EmpList[i]['employee_id'],
+                    EMobile:EmpList[i]['employee_mobile'],
+                });
+                this.setState({loaderDIV:"d-none"})
+                this.postAttendance(EmpList[i]['name'],EmpList[i]['employee_id'],EmpList[i]['employee_mobile'])
+                break;
+            }
+            else {
+                this.setState({result:"FAIL"})
+            }
+        }
+
+    }
+
+
+    postAttendance=(EName,Eid,EMobile)=>{
+        axios.post(onAttendanceURL(),onAttendanceBody(EName,Eid,EMobile))
+            .then((res)=>{
+                if(res.status===200 && res.data===1){
+                    AttendanceSuccess();
+                    setTimeout( ()=>{
+                        this.setState({Redirect:true})
+                    },10000)
+                }
+                else {
+                    RequestFail();
+                }
+            }).catch((err)=>{
+            RequestFail();
+        })
+    }
 
 
     render() {

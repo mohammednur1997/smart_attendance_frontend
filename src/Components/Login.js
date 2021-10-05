@@ -167,7 +167,7 @@ class Login extends Component {
                     <Row className="d-flex  justify-content-center">
                         <Col className="text-center   p-3" md={4} sm={12} lg={4}>
                             <img className={this.state.PreviewSpinner+" w-50"} src={this.state.spinner}/>
-                            <canvas className="canvasClass" id="canvasID"/>
+                            {/*<canvas className="canvasClass" id="canvasID"/>*/}
                         </Col>
                         <Col className="  p-3" md={4} sm={12} lg={4}>
                             <label className="form-label text-white">Password</label>
