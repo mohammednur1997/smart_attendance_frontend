@@ -278,11 +278,11 @@ class RecordPage extends Component {
         }else{
             /* const myData = this.state.DataList;*/
             const myData = [
-                {id:1, "name":"Mohammed Nur", "Net_Salary":200, "Gross_Salary": '200', "Deduction": 50, "Salary_Status": "paid", "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
-                {id:2, "name":"Mohammed Nur", "Net_Salary":200, "Gross_Salary": '200', "Deduction": 50, "Salary_Status": "unpaid", "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
-                {id:3, "name":"Mohammed Nur", "Net_Salary":200, "Gross_Salary": '200', "Deduction": 50, "Salary_Status": "paid", "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
-                {id:4, "name":"Mohammed Nur", "Net_Salary":200, "Gross_Salary": '200', "Deduction": 50, "Salary_Status": "unpaid", "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
-                {id:5, "name":"Mohammed Nur", "Net_Salary":200, "Gross_Salary": '200', "Deduction": 50, "Salary_Status": "paid", "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
+                {id:1, "name":"Mohammed Nur",  "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
+                {id:2, "name":"Mohammed Nur",  "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
+                {id:3, "name":"Mohammed Nur",  "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
+                {id:4, "name":"Mohammed Nur",  "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
+                {id:5, "name":"Mohammed Nur",  "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
             ]
             /*  const column = [
                   {dataField: "id", text: "ID"},
@@ -296,22 +296,10 @@ class RecordPage extends Component {
 
             const column = [{
                 dataField: 'id',
-                text: 'ID'
+                text: 'ID',
             }, {
                 dataField: 'name',
                 text: 'Name'
-            }, {
-                dataField: 'Net_Salary',
-                text: 'Net Salary'
-            },{
-                    dataField: 'Gross_Salary',
-                    text: 'Gross Salary'
-                },{
-                dataField: 'Deduction',
-                text: 'Deduction'
-            },{
-                dataField: 'Salary_Status',
-                text: 'Salary Status'
             },{
                 dataField: 'Status',
                 text: 'Status'
@@ -322,7 +310,7 @@ class RecordPage extends Component {
                     dataField: 'Check_Out',
                     text: 'Check Out'
                 },{
-                dataField: 'Day',
+                dataField: 'day',
                 text: 'Day'
               }
                 ];
@@ -338,33 +326,61 @@ class RecordPage extends Component {
                 <Fragment>
                     <Menu title="Project">
                         <Container fluid={true}>
+
+                            <Row className="mb-2">
+                                <Col sm={4} md={4} lg={4}>
+                                    <select className="form-control">
+                                        <option value="A">Today</option>
+                                        <option value="B">This Month</option>
+                                    </select>
+                                </Col>
+
+                                <Col sm={4} md={4} lg={4}>
+                                    <select className="form-control">
+                                        <option value="A">Present</option>
+                                        <option value="B">Absence</option>
+                                    </select>
+                                </Col>
+                            </Row>
+
+                            <Row className="mb-2">
+                                <Col sm={3} md={3} lg={3}>
+                                    <Card className="bg-white text-black p-4">
+                                            <Card.Title>2566</Card.Title>
+                                            <Card.Text>Net Salary</Card.Text>
+                                    </Card>
+                                </Col>
+
+                                <Col sm={3} md={3} lg={3}>
+                                    <Card className="bg-white text-black p-4">
+                                        <Card.Title>45</Card.Title>
+                                        <Card.Text>Gross Salary</Card.Text>
+                                    </Card>
+                                </Col>
+
+                                <Col sm={3} md={3} lg={3}>
+                                    <Card className="bg-white text-black p-4">
+                                        <Card.Title>50</Card.Title>
+                                        <Card.Text>Deduction</Card.Text>
+                                    </Card>
+                                </Col>
+
+                                <Col sm={3} md={3} lg={3}>
+                                    <Card className="bg-white text-black p-4">
+                                        <Card.Title>Paid</Card.Title>
+                                        <Card.Text>Salary Status</Card.Text>
+                                    </Card>
+                                </Col>
+                            </Row>
+
                             <Row>
                                 <Col sm={12} md={12} lg={12}>
                                     <Card>
                                         <Card.Body>
-                                            <Row>
-                                                <Col sm={4} md={4} lg={4}>
-                                                    <select className="form-control">
-                                                        <option value="A">Today</option>
-                                                        <option value="B">This Month</option>
-                                                    </select>
-                                                </Col>
-
-                                                <Col sm={4} md={4} lg={4}>
-                                                    <select className="form-control">
-                                                        <option value="A">Present</option>
-                                                        <option value="B">Absence</option>
-                                                    </select>
-                                                </Col>
-                                            </Row>
-                                            <br/>
-                                            <br/>
-
-
                                             {/*<Button onClick={this.deleteData} className="normal-btn btn my-3">Delete</Button>
                                             <Button onClick={this.openModal} className="normal-btn btn ml-2">Add New</Button>
                                             <Button onClick={this.openUpdateModal} className="normal-btn btn ml-2">Update</Button>*/}
-                                            <BootstrapTable keyField='id'  data={ myData } columns={ column } pagination={ paginationFactory() } />
+                                            <BootstrapTable footerTitle={true} keyField='id'  data={ myData } columns={ column } pagination={ paginationFactory() } />
                                         </Card.Body>
                                     </Card>
                                 </Col>

@@ -25,12 +25,8 @@ class ToastHelper{
         cogoToast.success("Registration Success !",{position:"bottom-center"})
     }
 
-    RequestFail(){
-        cogoToast.error("Request Fail!",{position:"bottom-center"})
-    }
-
-    AttendanceSuccess(){
-        cogoToast.success("Attendance Success",{position:"bottom-center"})
+    AttendanceSuccess(msg){
+        cogoToast.success(msg,{position:"bottom-center"})
     }
 
 }

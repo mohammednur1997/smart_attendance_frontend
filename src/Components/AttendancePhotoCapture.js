@@ -1,29 +1,38 @@
 import React, {Component,Fragment} from 'react';
-import { Col, Container, Row} from "react-bootstrap";
+import { Col, Container, Row, Form} from "react-bootstrap";
 import JEEFACETRANSFERAPI from "../WebGL2/jeelizFaceTransfer.module";
 import Webcam from "react-webcam";
+import Loader from "./Loader";
 import spinner from "../Assets/Image/spinner.svg";
 import imagePlaceholder from "../Assets/Image/imagePlaceholder.svg";
 import SweetAlert from "react-bootstrap-sweetalert";
-import {RequiredPhoto} from "../Helper/ToastHelper";
+import {RegistrationSuccess, RequestFail, RequiredPhoto, AttendanceSuccess} from "../Helper/ToastHelper";
 import {Redirect} from "react-router";
+import moment from "moment";
+import axios from "axios";
+import {onRegistrationBody, onRegistrationURL, onStartWorkBody, onAttendanceURL, onEndWorkBody} from "../APIServices/APIServices";
 class AttendancePhotoCapture extends Component {
 
     constructor() {
         super();
         this.state={
+            loaderDIV:"d-none",
             PreviewSpinner:"",
             spinner:spinner,
             photoSrc:imagePlaceholder,
             EPhoto:false,
             CameraError:false,
-            Redirect:false
+            Redirect:false,
+            Eid:"",
+            atten:""
         }
         this.cameraRef=React.createRef();
     }
+
    /* componentDidMount() {
         this.OpenWebGLCamera();
     }*/
+
     OpenWebGLCamera=()=>{
         JEEFACETRANSFERAPI.init({
             canvasId:"canvasID",
@@ -42,6 +51,65 @@ class AttendancePhotoCapture extends Component {
             }
         })
     }
+
+        getAttendance=()=>{
+           let employeeId = this.state.Eid;
+           let day = moment().format('dddd');
+           let start_time = moment().format('h:mm a');
+           let end_time = moment().format(' h:mm a');
+            let date  = moment().format('L');
+           if(this.state.atten == 1){
+               this.startWorkHours(employeeId, date, start_time, day);
+           }else if(this.state.atten == 2){
+               this.EndWorkHours(employeeId, date, end_time, day);
+            }
+
+        }
+
+    startWorkHours=(employee_id, date,in_time, day)=>{
+
+        this.setState({loaderDIV:""})
+
+        axios.post(onAttendanceURL(),onStartWorkBody(
+            employee_id, date,in_time, day
+        )).then((res)=>{
+            this.setState({loaderDIV:"d-none"})
+            console.log(res.data)
+            if(res.status===200 && res.data.result === "pass"){
+                AttendanceSuccess(res.data.message);
+                /*this.setState({ Redirect:true})*/
+            }
+            else {
+                RequestFail();
+            }
+        }).catch((err)=>{
+            this.setState({loaderDIV:"d-none"})
+            RequestFail();
+        })
+    }
+
+    EndWorkHours=(employee_id, date, end_time, day)=>{
+        this.setState({loaderDIV:""})
+
+        axios.post(onAttendanceURL(),onEndWorkBody(
+            employee_id, date, end_time, day
+        )).then((res)=>{
+            this.setState({loaderDIV:"d-none"})
+
+            console.log(res.data.message)
+
+            if(res.status===200 && res.data.result === "pass"){
+                AttendanceSuccess(res.data.message);
+            }
+            else {
+                RequestFail();
+            }
+        }).catch((err)=>{
+            this.setState({loaderDIV:"d-none"})
+            RequestFail();
+        })
+    }
+
 
     getFaceMovement=()=>{
         setInterval(()=>{
@@ -106,16 +174,38 @@ class AttendancePhotoCapture extends Component {
             <Fragment>
                 <Container>
                     <Row className="d-flex text-center justify-content-center">
-                        <Col className="text-center text-danger  p-3" md={4} sm={12} lg={4}>
+                       {/* <Col className="text-center text-danger  p-3" md={4} sm={12} lg={4}>
                             <h4>Open and close your eye to capture the picture</h4>
                         </Col>
                         <Col className="text-center " md={4} sm={12} lg={4}>
                             <img className={this.state.PreviewSpinner+" w-50"} src={this.state.spinner}/>
                             <canvas className="canvasClass" id="canvasID"/>
-                        </Col>
-                        <Col className="text-center" md={4} sm={12} lg={4}>
-                            <img id="PersonPhoto" className="preview-img" src={this.state.photoSrc}/>
-                            <button onClick={this.next} className="btn m-3 btn-block btn-danger">Next</button>
+                        </Col>*/}
+
+                        <Col className="p-3" md={4} sm={12} lg={4}>
+
+                                <label className="form-label text-black text-lg-left">Employee ID</label>
+                                <input onChange={(e)=>this.setState({Eid:e.target.value})}  className="form-control" type="text"/>
+
+
+                                <Form.Group>
+                                    <Form.Label>Select one option</Form.Label>
+                                    <Form.Control
+                                        as="select"
+                                        onChange={(e)=>this.setState({atten:e.target.value})}
+                                    >
+                                        <option value="0">Choose One</option>
+                                        <option value="1">Start</option>
+                                        <option value="2">Exist</option>
+                                    </Form.Control>
+                                </Form.Group>
+
+                            {/*<img id="PersonPhoto" className="preview-img" src={this.state.photoSrc}/>*/}
+
+
+                            {/*<button onClick={this.next} className="btn m-3 btn-block text-center btn-danger">Next</button>*/}
+
+                            <button onClick={this.getAttendance} className="btn m-3 btn-block text-center btn-danger">Get Attendance</button>
                         </Col>
                     </Row>
                 </Container>
@@ -131,7 +221,9 @@ class AttendancePhotoCapture extends Component {
                         />
                     </Col>
                 </Row>
-
+                <div className={this.state.loaderDIV}>
+                    <Loader/>
+                </div>
                 {this.CameraErrorAlert()}
                 {this.pageRedirect()}
             </Fragment>

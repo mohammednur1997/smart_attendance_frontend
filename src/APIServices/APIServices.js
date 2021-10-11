@@ -11,6 +11,11 @@ class APIServices{
         return "https://mobileecom.azmisoft.com/api/registration"
     }
 
+     //AttendanceUrl
+    onAttendanceURL(){
+        return "http://127.0.0.1:8000/api/attendance"
+    }
+
     onRegistrationBody(name,employee_id,employee_mobile,photo_descriptor){
             return{
                 name:name,
@@ -20,10 +25,28 @@ class APIServices{
             }
     }
 
-    // AttendancePhotoCapture
-    onAttendanceURL(){
-        return "https://mobileecom.azmisoft.com/api/attendance"
+    onStartWorkBody(employee_id, date, in_time, day){
+        return{
+            employee_id:employee_id,
+            date:date,
+            in_time:in_time,
+            day:day,
+        }
     }
+
+    onEndWorkBody(employee_id, date, end_time, day){
+        return{
+            employee_id:employee_id,
+            date:date,
+            out_time:end_time,
+            day:day,
+        }
+    }
+
+    // AttendancePhotoCapture
+   /* onAttendanceURL(){
+        return "https://mobileecom.azmisoft.com/api/attendance"
+    }*/
 
     onAttendanceBody(name,employee_id,employee_mobile){
         return{
@@ -40,6 +63,8 @@ export const {
     onListURL,
     onRegistrationURL,
     onRegistrationBody,
-    onAttendanceURL,
-    onAttendanceBody
+    onAttendanceBody,
+    onStartWorkBody,
+    onEndWorkBody,
+    onAttendanceURL
 }=new APIServices();

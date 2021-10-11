@@ -73,7 +73,7 @@ class RegistrationInfo extends Component {
             await  faceapi.loadSsdMobilenetv1Model('/model1');
             await  faceapi.loadFaceLandmarkModel('/model1');
             await  faceapi.loadFaceRecognitionModel('/model1');
-            const img=document.getElementById('PersonPhoto')
+            const img = document.getElementById('PersonPhoto')
             const imgDes= await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
             let photo_descriptor= JSON.stringify(Array.from(imgDes['descriptor']))
             this.postRegistrationData(name,employee_id,employee_mobile,photo_descriptor)
@@ -97,7 +97,7 @@ class RegistrationInfo extends Component {
                         <Col className="text-center   p-3" md={4} sm={12} lg={4}>
                             <h6><img id="PersonPhoto" className="preview-img" src={this.state.photoSrc}/></h6>
                         </Col>
-                        <Col className="  p-3" md={4} sm={12} lg={4}>
+                        <Col className="p-3" md={4} sm={12} lg={4}>
                             <label className="form-label text-white">Employee Name </label>
                             <input onChange={(e)=>this.setState({EName:e.target.value})}  className="form-control" type="text"/>
                             <label className="form-label text-white">Employee ID</label>
