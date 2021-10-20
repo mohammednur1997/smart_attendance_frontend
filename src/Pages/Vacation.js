@@ -286,15 +286,7 @@ class VacationPage extends Component {
                 {id:5, "name":"Mohammed Nur", "Start_date":20/2/201, "End_date":1/21/2010,"reason":"For fiver", "status":"Approve"},
                 {id:6, "name":"Mohammed Nur", "Start_date":20/2/201, "End_date":1/21/2010,"reason":"For fiver", "status":"Approve"},
             ]
-            /*  const column = [
-                  {dataField: "id", text: "ID"},
-         /!*         {dataField: "image_one", text: "Card Image", formatter: this.imageRender},
-                  {dataField: "image_two", text: "Project Image", formatter: this.imageRenderPro},*!/
-                  {dataField: "project_title", text: "Project Title"},
-                  {dataField: "project_description", text: "Project Description"},
-                  {dataField: "project_title", text: "Project Title"},
-                  {dataField: "project_description", text: "Project Description"}
-              ]*/
+
 
             const column = [{
                 dataField: 'id',

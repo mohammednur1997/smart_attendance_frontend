@@ -27,7 +27,8 @@ class AttendanceInfo extends Component {
 
         }
     }
-    componentDidMount() {
+
+    /*componentDidMount() {
         let photoSrc= sessionStorage.getItem('photoSrc');
         this.setState({photoSrc:photoSrc})
         let EmpList=  JSON.parse(localStorage.getItem('list'))
@@ -36,7 +37,7 @@ class AttendanceInfo extends Component {
         this.AttendancePhotoDesCal();
 
 
-    }
+    }*/
 
 
     pageRedirect=()=>{

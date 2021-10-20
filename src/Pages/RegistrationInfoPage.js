@@ -1,12 +1,12 @@
 import React, {Component, Fragment} from 'react';
-import MenuBar from "../Components/MenuBar";
+import Menu from "../Components/Menu";
 import RegistrationInfo from "../Components/RegistrationInfo";
 
 class RegistrationInfoPage extends Component {
     render() {
         return (
             <Fragment>
-                <MenuBar/>
+                <Menu/>
                 <br/>
                 <RegistrationInfo/>
             </Fragment>

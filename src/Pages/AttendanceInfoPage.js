@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from 'react';
-import MenuBar from "../Components/MenuBar";
+import Menu from "../Components/Menu";
 import AttendanceInfo from "../Components/AttendanceInfo";
 
 
@@ -7,7 +7,7 @@ class AttendanceInfoPage extends Component {
     render() {
         return (
             <Fragment>
-                <MenuBar/>
+                <Menu/>
                 <br/>
                 <AttendanceInfo/>
             </Fragment>

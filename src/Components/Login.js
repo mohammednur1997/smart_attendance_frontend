@@ -1,9 +1,18 @@
 import React, {Component, Fragment} from 'react';
 import {Button, Col, Container, Row} from "react-bootstrap";
-import {RegistrationSuccess, RequestFail, RequiredID, RequiredMobile, RequiredName} from "../Helper/ToastHelper";
+import {
+    AttendanceSuccess,
+    RegistrationSuccess,
+    RequestFail,
+    RequiredID,
+    RequiredMobile,
+    RequiredName,
+    ErrorMessage,
+    SuccessMessage,
+} from "../Helper/ToastHelper";
 import axios from "axios";
 import Webcam from "react-webcam";
-import {onRegistrationBody, onRegistrationURL} from "../APIServices/APIServices";
+import {onAttendanceURL, onRegistrationBody, onRegistrationURL, onStartWorkBody, onEmployeeLoginUrl, onLoginBody} from "../APIServices/APIServices";
 import * as faceapi from "face-api.js";
 import {Redirect} from "react-router";
 import JEEFACETRANSFERAPI from "../WebGL2/jeelizFaceTransfer.module";
@@ -18,6 +27,7 @@ class Login extends Component {
         this.state={
             loaderDIV:"d-none",
             pass:"",
+            email:"",
             PreviewSpinner:"",
             spinner:spinner,
             photoSrc:imagePlaceholder,
@@ -50,6 +60,60 @@ class Login extends Component {
         else{
             this.PhotoDesCal(EName,Eid,EMobile);
         }
+    }
+
+    /*Login=()=>{
+
+        let email = this.state.email;
+        let pass = this.state.pass;
+
+        if (pass.toString() === matchPas ){
+            this.setState({
+                Redirect: true
+            })
+
+        }else{
+            alert("Wrong Password")
+        }
+    }*/
+
+    Login=()=>{
+        let email = this.state.email;
+        let password = this.state.pass;
+
+        if (email.length === 0){
+            ErrorMessage("Enter Your Email");
+        }else if(password.length === 0){
+          ErrorMessage("Enter Your Password")
+        }else{
+
+            this.setState({loaderDIV:""})
+            axios.post(onEmployeeLoginUrl(),onLoginBody(
+                email, password
+            )).then((res)=>{
+                this.setState({loaderDIV:"d-none"})
+                if(res.status===200 && res.data.result === "pass"){
+                    SuccessMessage(res.data.message);
+
+                    sessionStorage.setItem('employee', JSON.stringify(res.data.employee) );
+                    sessionStorage.setItem('login', "true");
+                    sessionStorage.setItem("employeename", res.data.employee.name)
+                    sessionStorage.setItem("employeeId", res.data.employee.id)
+
+
+                    this.setState({Redirect: true})
+                } else if(res.status===200 && res.data.result === "fail"){
+                    /*  RequestFail();*/
+                    ErrorMessage(res.data.message);
+                }
+            }).catch((err)=>{
+                this.setState({loaderDIV:"d-none"})
+              /*  RequestFail();*/
+                ErrorMessage("Fail to Login");
+            })
+        }
+
+
     }
 
     OpenWebGLCamera=()=>{
@@ -148,14 +212,10 @@ class Login extends Component {
         this.setState({CameraError:true})
     }
 
-
-
-
-
     pageRedirect=()=>{
-        if(this.state.Redirect===true){
+        if(this.state.Redirect === true){
             return (
-                <Redirect to="/"/>
+                <Redirect to="/home"/>
             )
         }
     }
@@ -170,18 +230,22 @@ class Login extends Component {
                             {/*<canvas className="canvasClass" id="canvasID"/>*/}
                         </Col>
                         <Col className="  p-3" md={4} sm={12} lg={4}>
-                            <label className="form-label text-white">Password</label>
-                            <input onChange={(e)=>this.setState({pass:e.target.value})} placeholder="Login with password"  className="form-control" type="text"/>
-                            <Button onClick={this.onLogin}  className="btn  mt-3 btn-danger btn-block">Login</Button>
+                            <label className="form-label text-black-50">Email</label>
+                            <input onChange={(e)=>this.setState({email:e.target.value})} placeholder="Enter Email"  className="form-control" type="text"/>
+
+                            <label className="form-label text-black-50">Password</label>
+                            <input onChange={(e)=>this.setState({pass:e.target.value})} placeholder="Enter Password"  className="form-control" type="text"/>
+                            <Button onClick={this.Login}  className="btn  mt-3 btn-danger btn-block">Login</Button>
                         </Col>
 
                     </Row>
 
                 </Container>
-                {/*<div className={this.state.loaderDIV}>
+               {/* <div className={this.state.loaderDIV}>
                     <Loader/>
                 </div>
-                {this.pageRedirect()}*/}
+                */}
+                {this.pageRedirect()}
             </Fragment>
         );
     }

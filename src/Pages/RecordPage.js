@@ -15,7 +15,7 @@ class RecordPage extends Component {
     constructor() {
         super();
         this.state ={
-            DataList:[],
+            EmployeeData:[],
             isLoading:true,
             isWrong:false,
             rowDataId:"",
@@ -26,10 +26,18 @@ class RecordPage extends Component {
             PreviewLink:"",
             CardImage:"",
             projectImage:"",
-            modelStatus:false
+            modelStatus:false,
+
+            salary:"UnDefine",
+            reward: "UnDefine",
+            deduction: "UnDefine",
+            salary_status: "UnDefine",
+            attendance:[],
+            emId:""
+
+
         }
-        this.deleteData = this.deleteData.bind(this);
-        this.getDaData = this.getDaData.bind(this);
+
         this.imageRender = this.imageRender.bind(this);
         this.imageRenderPro = this.imageRenderPro.bind(this);
 
@@ -42,19 +50,24 @@ class RecordPage extends Component {
 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
-        this.openUpdateModal = this.openUpdateModal.bind(this);
-        this.formSubmit = this.formSubmit.bind(this);
+
     }
 
     componentDidMount() {
-        this.getDaData();
+        this.getAttendance();
+        this.getDataByDate();
     }
 
-    getDaData(){
-        Axios.get("https://admin.azmisoft.com/api/projectList")
+    getAttendance(){
+        let employee_id = sessionStorage.getItem("employeeId");
+
+         this.setState({isLoading: true})
+        Axios.get("http://127.0.0.1:8000/api/GetAttendanceById/"+ employee_id)
+
             .then((response)=>{
+                console.log(response.data.attendance)
                 if (response.status == 200){
-                    this.setState({DataList:response.data, isLoading:false, isWrong:false})
+                    this.setState({attendance:response.data.attendance, isLoading:false, isWrong:false})
                 }else{
                     this.setState({isLoading:false, isWrong:true})
                 }
@@ -64,6 +77,31 @@ class RecordPage extends Component {
         })
     }
 
+    getDataByDate(){
+        let employee_id = sessionStorage.getItem("employeeId");
+        this.setState({isLoading: true})
+        Axios.get("http://127.0.0.1:8000/api/getDataByDate/"+ employee_id)
+            .then((response)=>{
+                if (response.status == 200){
+                    this.setState({
+                        EmployeeData:response.data.EmployeeData,
+                        salary:response.data.EmployeeData.salary,
+                        reward:response.data.EmployeeData.re_amount,
+                        deduction:response.data.EmployeeData.dd_amount,
+                        salary_status:response.data.EmployeeData.salary_status,
+                        isWrong:false
+                    })
+                }else{
+                    this.setState({isLoading:false, isWrong:true})
+                }
+
+            }).catch(()=>{
+            this.setState({isLoading:false, isWrong:true})
+        })
+    }
+
+
+
     openModal(){
         this.setState({modelStatus: true})
     }
@@ -71,37 +109,6 @@ class RecordPage extends Component {
     closeModal(){
         this.setState({modelStatus: false})
     }
-
-    openUpdateModal(event){
-        this.setState({modelStatus: true})
-
-        let rowId = this.state.rowDataId;
-        if (rowId === ""){
-            alert("Please select a row");
-            this.setState({modelStatus: false})
-        }else{
-            let url = "/getProjectDataById/"+rowId;
-
-            Axios.get(url)
-                .then(response =>{
-                    let data =  response.data.serviceData;
-                    this.setState({
-                        title:data[0]['project_title'],
-                        description: data[0]['project_description'],
-                        feature: data[0]['project_feature'],
-                        PreviewLink: data[0]['project_preview_link'],
-                        CardImage: data[0]['image_one'],
-                        projectImage: data[0]['image_two'],
-                    })
-                })
-                .catch(error =>{
-                    alert(error)
-                })
-        }
-
-        event.preventDefault();
-    }
-
 
     projectTitle(event){
         let title =  event.target.value;
@@ -133,121 +140,7 @@ class RecordPage extends Component {
         this.setState({projectImage: proPhoto})
     }
 
-    formSubmit(event){
 
-        let projectTitle = this.state.title;
-        let description = this.state.description;
-        let feature = this.state.feature;
-        let link = this.state.PreviewLink;
-        let CardImage = this.state.CardImage;
-        let projectImage = this.state.projectImage;
-
-        let id  = this.state.rowDataId;
-
-        let data = new FormData;
-        data.append('id', id);
-        data.append('title', projectTitle);
-        data.append('des', description);
-        data.append('projectFeature', feature);
-        data.append('previewLink', link);
-        data.append('CardImage', CardImage);
-        data.append('projectImage', projectImage);
-
-        let config = {
-            headers:{
-                'content-type':"multipart/form-data"
-            }
-        }
-        let url = "/addProject";
-
-        Axios.post(url, data, config)
-            .then(response =>{
-                if (response.status === 200 ){
-                    toast.success('Data Save Success!', {
-                        position: "bottom-center",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: false,
-                        progress: undefined,
-                    });
-                    this.setState({modelStatus:false})
-                    this.componentDidMount();
-                }else{
-                    toast.error('Fail to save data!', {
-                        position: "bottom-center",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: false,
-                        progress: undefined,
-                    });
-                    this.setState({modelStatus:false})
-                    this.componentDidMount();
-                }
-
-            })
-            .catch(error =>{
-                toast.error('Fail to save data!', {
-                    position: "bottom-center",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: false,
-                    progress: undefined,
-                });
-            })
-        event.preventDefault();
-    }
-
-    deleteData(){
-        let confirmData = confirm("Are You want to Delete Data");
-        if (confirmData === true){
-            this.setState({buttonText: <Spinner as='span' animation='border' size='lg' role='status' aria-hidden='true'/>})
-            Axios.post("/projectDelete", {id:this.state.rowDataId})
-                .then((response)=>{
-                    if (response.data == 1 && response.status == 200){
-                        toast.success('Delete Success!', {
-                            position: "bottom-center",
-                            autoClose: 3000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: false,
-                            draggable: false,
-                            progress: undefined,
-                        });
-                        this.getDaData();
-                    }else{
-                        toast.error('Delete Fail!', {
-                            position: "bottom-center",
-                            autoClose: 3000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: false,
-                            draggable: false,
-                            progress: undefined,
-                        });
-                        this.getDaData();
-                    }
-
-                })
-                .catch((error)=>{
-                    toast.error('Delete Fail!', {
-                        position: "bottom-center",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: false,
-                        progress: undefined,
-                    });
-                    this.getDaData();
-                })
-        }
-    }
 
     imageRender(cell, row){
         return <img className="table-cell-img" src={cell} alt="No Image"/>
@@ -276,43 +169,27 @@ class RecordPage extends Component {
                 </Menu>
             );
         }else{
-            /* const myData = this.state.DataList;*/
-            const myData = [
-                {id:1, "name":"Mohammed Nur",  "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
-                {id:2, "name":"Mohammed Nur",  "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
-                {id:3, "name":"Mohammed Nur",  "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
-                {id:4, "name":"Mohammed Nur",  "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
-                {id:5, "name":"Mohammed Nur",  "Status": "abcance", "Check_In": "20/5/2012-2:20", "Check_Out": "20/5/2012-2:20", "day":"saturday"},
-            ]
-            /*  const column = [
-                  {dataField: "id", text: "ID"},
-         /!*         {dataField: "image_one", text: "Card Image", formatter: this.imageRender},
-                  {dataField: "image_two", text: "Project Image", formatter: this.imageRenderPro},*!/
-                  {dataField: "project_title", text: "Project Title"},
-                  {dataField: "project_description", text: "Project Description"},
-                  {dataField: "project_title", text: "Project Title"},
-                  {dataField: "project_description", text: "Project Description"}
-              ]*/
-
+             const myData = this.state.attendance;
             const column = [{
-                dataField: 'id',
-                text: 'ID',
-            }, {
-                dataField: 'name',
-                text: 'Name'
+                dataField: 'present_status',
+                text: 'Present Status'
             },{
-                dataField: 'Status',
-                text: 'Status'
-            },{
-                dataField: 'Check_In',
+                dataField: 'late',
+                text: 'Late'
+            }
+            ,{
+                dataField: 'check_in',
                 text: 'Check In'
             },{
-                    dataField: 'Check_Out',
+                    dataField: 'check_out',
                     text: 'Check Out'
                 },{
                 dataField: 'day',
                 text: 'Day'
-              }
+              },{
+                    dataField: 'date',
+                    text: 'Date'
+                }
                 ];
 
          /*   const selectRow = {
@@ -346,28 +223,28 @@ class RecordPage extends Component {
                             <Row className="mb-2">
                                 <Col sm={3} md={3} lg={3}>
                                     <Card className="bg-white text-black p-4">
-                                            <Card.Title>2566</Card.Title>
+                                            <Card.Title>{this.state.salary}</Card.Title>
                                             <Card.Text>Net Salary</Card.Text>
                                     </Card>
                                 </Col>
 
                                 <Col sm={3} md={3} lg={3}>
                                     <Card className="bg-white text-black p-4">
-                                        <Card.Title>45</Card.Title>
+                                        <Card.Title>{Number(this.state.salary) + Number(this.state.reward)}</Card.Title>
                                         <Card.Text>Gross Salary</Card.Text>
                                     </Card>
                                 </Col>
 
                                 <Col sm={3} md={3} lg={3}>
                                     <Card className="bg-white text-black p-4">
-                                        <Card.Title>50</Card.Title>
+                                        <Card.Title>{this.state.deduction}</Card.Title>
                                         <Card.Text>Deduction</Card.Text>
                                     </Card>
                                 </Col>
 
                                 <Col sm={3} md={3} lg={3}>
                                     <Card className="bg-white text-black p-4">
-                                        <Card.Title>Paid</Card.Title>
+                                        <Card.Title>{this.state.salary_status}</Card.Title>
                                         <Card.Text>Salary Status</Card.Text>
                                     </Card>
                                 </Col>
@@ -377,9 +254,6 @@ class RecordPage extends Component {
                                 <Col sm={12} md={12} lg={12}>
                                     <Card>
                                         <Card.Body>
-                                            {/*<Button onClick={this.deleteData} className="normal-btn btn my-3">Delete</Button>
-                                            <Button onClick={this.openModal} className="normal-btn btn ml-2">Add New</Button>
-                                            <Button onClick={this.openUpdateModal} className="normal-btn btn ml-2">Update</Button>*/}
                                             <BootstrapTable footerTitle={true} keyField='id'  data={ myData } columns={ column } pagination={ paginationFactory() } />
                                         </Card.Body>
                                     </Card>

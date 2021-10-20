@@ -2,6 +2,14 @@ import cogoToast from "cogo-toast";
 
 class ToastHelper{
 
+    ErrorMessage(msg){
+        cogoToast.error(msg, {position:"bottom-center"})
+    }
+
+    SuccessMessage(msg){
+        cogoToast.success(msg,{position:"bottom-center"})
+    }
+
     RequiredName(){
             cogoToast.error("Employee Name Required !",{position:"bottom-center"})
     }
@@ -40,5 +48,7 @@ export const {
     RequiredID,
     InvalidID,
     RequiredMobile,
-    InvalidMobile
+    InvalidMobile,
+    ErrorMessage,
+    SuccessMessage,
 }=new ToastHelper();

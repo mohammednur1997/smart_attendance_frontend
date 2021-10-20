@@ -1,6 +1,5 @@
 import React, {Component, Fragment} from 'react';
-import HowWorks from "../Components/HowWorks";
-import MenuBar from "../Components/MenuBar";
+import Menu from "../Components/Menu";
 import axios from "axios";
 import {onListURL} from "../APIServices/APIServices";
 import {RequestFail} from "../Helper/ToastHelper";
@@ -21,7 +20,7 @@ class HomePage extends Component {
     render() {
         return (
             <Fragment>
-                <MenuBar/>
+                <Menu/>
                 <br/>
                 <HowWorks/>
             </Fragment>

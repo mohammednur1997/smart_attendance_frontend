@@ -1,12 +1,12 @@
 import React, {Component,Fragment} from 'react';
-import MenuBar from "../Components/MenuBar";
 import AttendancePhotoCapture from "../Components/AttendancePhotoCapture";
+import Menu from "../Components/Menu";
 
 class AttendancePhotoCapturePage extends Component {
     render() {
         return (
             <Fragment>
-                <MenuBar/>
+                <Menu/>
                 <br/>
                 <AttendancePhotoCapture/>
             </Fragment>

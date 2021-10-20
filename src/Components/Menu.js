@@ -29,19 +29,22 @@ class Menu extends Component {
 
 
     render() {
+        let employeeName = sessionStorage.getItem("employeename");
         return (
+
             <Fragment>
                 <title>{this.props.title}</title>
                 <Navbar  expand="lg" className="fixed-top shadow-sm bg-white mb-5 py-3" variant="light" bg="white">
                     <Navbar.Brand onClick={this.showHideSideNav}><FontAwesomeIcon icon={faBars} /></Navbar.Brand>
-                    <b>EMPLOYEE DASHBOARD</b>
+                    <b>{employeeName}</b>
                 </Navbar>
 
                 <div className={this.state.sideNavClass}>
                     <NavLink> <Link className="NavItem" to="/home"> <FontAwesomeIcon icon={faHome} /><span className={this.state.NavText}> Home</span></Link></NavLink>
+                    <NavLink><Link className="NavItem" to="/AttendancePhoto"> <FontAwesomeIcon icon={faFolder} /><span className={this.state.NavText}> Attendance</span></Link></NavLink>
                     <NavLink><Link className="NavItem" to="/record"> <FontAwesomeIcon icon={faFolder} /><span className={this.state.NavText}> Record</span></Link></NavLink>
                     <NavLink><Link className="NavItem" to="/vacation"> <FontAwesomeIcon icon={faComment} /><span className={this.state.NavText}> Vacation</span></Link></NavLink>
-                    <a className="ml-3 NavItem" href="/logout"> <FontAwesomeIcon icon={faPowerOff} /><span className={this.state.NavText}> LogOut</span></a>
+                    <NavLink><Link className="NavItem" to="/logout"> <FontAwesomeIcon icon={faPowerOff} /><span className={this.state.NavText}> LogOut</span></Link></NavLink>
                 </div>
                 <div onClick={this.showHideSideNav} className={this.state.mainDivOverlay}>
 

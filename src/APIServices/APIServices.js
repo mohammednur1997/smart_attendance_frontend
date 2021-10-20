@@ -16,6 +16,17 @@ class APIServices{
         return "http://127.0.0.1:8000/api/attendance"
     }
 
+    onEmployeeLoginUrl(){
+        return "http://127.0.0.1:8000/api/login"
+    }
+
+    onLoginBody(email,password){
+        return{
+            email:email,
+            password:password,
+        }
+    }
+
     onRegistrationBody(name,employee_id,employee_mobile,photo_descriptor){
             return{
                 name:name,
@@ -66,5 +77,7 @@ export const {
     onAttendanceBody,
     onStartWorkBody,
     onEndWorkBody,
-    onAttendanceURL
+    onAttendanceURL,
+    onEmployeeLoginUrl,
+    onLoginBody
 }=new APIServices();
