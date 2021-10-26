@@ -5,6 +5,10 @@ class APIServices{
         return "https://mobileecom.azmisoft.com/api/list"
     }
 
+    AttendanceHost(){
+        return "http://127.0.0.1:8000"
+    }
+
 
     // Registration
     onRegistrationURL(){
@@ -79,5 +83,6 @@ export const {
     onEndWorkBody,
     onAttendanceURL,
     onEmployeeLoginUrl,
-    onLoginBody
+    onLoginBody,
+    AttendanceHost
 }=new APIServices();

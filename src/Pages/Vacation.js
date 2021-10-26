@@ -4,58 +4,49 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from "axios";
 import {Button, Card, Col, Container, Form, Modal, Row, Spinner} from "react-bootstrap";
+import {AttendanceHost, onLoginBody} from "../APIServices/APIServices";
 import LoadingDiv from "../Components/loadingDiv";
 import WentWrong from "../Components/wentWrong";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {
+    ErrorMessage,
+    SuccessMessage,
+} from "../Helper/ToastHelper";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import moment from "moment";
 
 class VacationPage extends Component {
 
     constructor() {
         super();
         this.state ={
-            DataList:[],
+            Vacation:[],
             isLoading:true,
             isWrong:false,
             rowDataId:"",
+            buttonText:"Delete",
 
-            title:"",
-            description:"",
-            feature:"",
-            PreviewLink:"",
-            CardImage:"",
-            projectImage:"",
+            start_date:"",
+            end_date:"",
+            reason:"",
             modelStatus:false
         }
-        this.deleteData = this.deleteData.bind(this);
-        this.getDaData = this.getDaData.bind(this);
-        this.imageRender = this.imageRender.bind(this);
-        this.imageRenderPro = this.imageRenderPro.bind(this);
-
-        this.projectTitle = this.projectTitle.bind(this);
-        this.projectDes = this.projectDes.bind(this);
-        this.projectFeature = this.projectFeature.bind(this);
-        this.projectPreviewLink = this.projectPreviewLink.bind(this);
-        this.projectCardImage = this.projectCardImage.bind(this);
-        this.projectImage = this.projectImage.bind(this);
-
-        this.openModal = this.openModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-        this.openUpdateModal = this.openUpdateModal.bind(this);
-        this.formSubmit = this.formSubmit.bind(this);
     }
 
     componentDidMount() {
-        this.getDaData();
+       this.getVacation()
     }
 
-    getDaData(){
-        Axios.get("https://admin.azmisoft.com/api/projectList")
+    getVacation=()=>{
+        let employee_id = sessionStorage.getItem("employeeId");
+        this.setState({isLoading: true})
+        Axios.get(AttendanceHost()+"/api/vacation/"+ employee_id)
+
             .then((response)=>{
                 if (response.status == 200){
-                    this.setState({DataList:response.data, isLoading:false, isWrong:false})
+                    this.setState({Vacation:response.data.vacation, isLoading:false, isWrong:false})
                 }else{
                     this.setState({isLoading:false, isWrong:true})
                 }
@@ -65,199 +56,151 @@ class VacationPage extends Component {
         })
     }
 
-    openModal(){
-        this.setState({modelStatus: true})
+    openModal=()=>{
+        let rowId = this.state.rowDataId;
+        if (rowId){
+            window.location.reload();
+            this.setState({modelStatus: false})
+        }else{
+            this.setState({modelStatus: true})
+        }
+
     }
 
-    closeModal(){
+    closeModal=()=>{
         this.setState({modelStatus: false})
     }
 
-    openUpdateModal(event){
+    openUpdateModal=(event)=>{
         this.setState({modelStatus: true})
-
         let rowId = this.state.rowDataId;
+
         if (rowId === ""){
-            alert("Please select a row");
+            ErrorMessage("Select a data from table")
             this.setState({modelStatus: false})
         }else{
-            let url = "/getProjectDataById/"+rowId;
-
+            let url = AttendanceHost()+"/api/vacationByID/"+rowId;
             Axios.get(url)
                 .then(response =>{
-                    let data =  response.data.serviceData;
+                    let data =  response.data.vacation;
                     this.setState({
-                        title:data[0]['project_title'],
-                        description: data[0]['project_description'],
-                        feature: data[0]['project_feature'],
-                        PreviewLink: data[0]['project_preview_link'],
-                        CardImage: data[0]['image_one'],
-                        projectImage: data[0]['image_two'],
+                        start_date: data.start_date,
+                        end_date: data.end_date,
+                        reason: data.reason,
                     })
                 })
                 .catch(error =>{
-                    alert(error)
+                    ErrorMessage(error)
                 })
         }
 
         event.preventDefault();
     }
 
-
-    projectTitle(event){
-        let title =  event.target.value;
-        this.setState({title: title})
+    startDate=(event)=>{
+        let start =  event.target.value;
+        this.setState({start_date: start})
     }
 
-    projectDes(content, delta, source, editor){
-        let myContent = editor.getText();
-        this.setState({description: myContent})
+    endDate=(event)=>{
+        let end =  event.target.value;
+        this.setState({end_date: end})
     }
 
-    projectFeature(content, delta, source, editor){
+
+    reason=(content, delta, source, editor)=>{
         let myContent = editor.getHTML();
-        this.setState({feature: myContent})
+        this.setState({reason: myContent})
     }
 
-    projectPreviewLink(event){
-        let link =  event.target.value;
-        this.setState({PreviewLink: link})
-    }
+    formSubmit=(event)=>{
 
-    projectCardImage(event){
-        let CardPhoto =  event.target.files[0];
-        this.setState({CardImage: CardPhoto})
-    }
-
-    projectImage(event){
-        let proPhoto =  event.target.files[0];
-        this.setState({projectImage: proPhoto})
-    }
-
-    formSubmit(event){
-
-        let projectTitle = this.state.title;
-        let description = this.state.description;
-        let feature = this.state.feature;
-        let link = this.state.PreviewLink;
-        let CardImage = this.state.CardImage;
-        let projectImage = this.state.projectImage;
-
+        let start = this.state.start_date
+        let end = this.state.end_date;
+        let reason = this.state.reason;
         let id  = this.state.rowDataId;
+        let employee_id = sessionStorage.getItem("employeeId")
 
         let data = new FormData;
         data.append('id', id);
-        data.append('title', projectTitle);
-        data.append('des', description);
-        data.append('projectFeature', feature);
-        data.append('previewLink', link);
-        data.append('CardImage', CardImage);
-        data.append('projectImage', projectImage);
+        data.append('employee_id', employee_id);
+        data.append('start_date', start);
+        data.append('end_date', end);
+        data.append('reason', reason);
 
         let config = {
             headers:{
                 'content-type':"multipart/form-data"
             }
         }
-        let url = "/addProject";
+
+        let url = AttendanceHost()+"/api/vacation/store";
 
         Axios.post(url, data, config)
             .then(response =>{
-                if (response.status === 200 ){
-                    toast.success('Data Save Success!', {
-                        position: "bottom-center",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: false,
-                        progress: undefined,
-                    });
+                if (response.status === 200 && response.data.result === "pass" ){
+                     SuccessMessage(response.data.message)
                     this.setState({modelStatus:false})
                     this.componentDidMount();
                 }else{
-                    toast.error('Fail to save data!', {
-                        position: "bottom-center",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: false,
-                        progress: undefined,
-                    });
+                    SuccessMessage("Something Wrong!")
                     this.setState({modelStatus:false})
                     this.componentDidMount();
                 }
 
             })
             .catch(error =>{
-                toast.error('Fail to save data!', {
-                    position: "bottom-center",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: false,
-                    progress: undefined,
-                });
+                SuccessMessage("Something Wrong!")
             })
         event.preventDefault();
     }
 
-    deleteData(){
-        let confirmData = confirm("Are You want to Delete Data");
-        if (confirmData === true){
-            this.setState({buttonText: <Spinner as='span' animation='border' size='lg' role='status' aria-hidden='true'/>})
-            Axios.post("/projectDelete", {id:this.state.rowDataId})
-                .then((response)=>{
-                    if (response.data == 1 && response.status == 200){
-                        toast.success('Delete Success!', {
-                            position: "bottom-center",
-                            autoClose: 3000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: false,
-                            draggable: false,
-                            progress: undefined,
-                        });
-                        this.getDaData();
-                    }else{
-                        toast.error('Delete Fail!', {
-                            position: "bottom-center",
-                            autoClose: 3000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: false,
-                            draggable: false,
-                            progress: undefined,
-                        });
-                        this.getDaData();
-                    }
+    deleteData=()=>{
+        let rowId = this.state.rowDataId;
+        if (rowId === ""){
+            ErrorMessage("Select a data from table")
+            this.setState({modelStatus: false})
+        }else{
+            let confirmData = confirm("Are You want to Delete Data");
+            if (confirmData === true){
+                this.setState({buttonText: <Spinner as='span' animation='border' size='lg' role='status' aria-hidden='true'/>})
+                let url = AttendanceHost()+"/api/vacation/delete/"+this.state.rowDataId
+                Axios.get(url)
+                    .then((response)=>{
+                        if (response.data.result === "pass" && response.status === 200){
+                            SuccessMessage(response.data.message)
+                            this.setState({
+                                buttonText:"Delete"
+                            })
+                            this.getVacation();
+                        }else{
+                            this.setState({
+                                buttonText:"Delete"
+                            })
+                            ErrorMessage("Something want wrong")
+                            this.getVacation();
+                        }
 
-                })
-                .catch((error)=>{
-                    toast.error('Delete Fail!', {
-                        position: "bottom-center",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: false,
-                        progress: undefined,
-                    });
-                    this.getDaData();
-                })
+                    })
+                    .catch((error)=>{
+                        this.setState({
+                            buttonText:"Delete"
+                        })
+                        ErrorMessage("Something want wrong")
+                        this.getVacation();
+                    })
+            }
         }
+
+
     }
 
-    imageRender(cell, row){
-        return <img className="table-cell-img" src={cell} alt="No Image"/>
-    }
-    imageRenderPro(cell, row){
-        return <img className="table-cell-img" src={cell} alt="No Image"/>
-    }
+
 
     render() {
+
+        let start = moment(this.state.start_date, "DD-MM-YYYY").format("YYYY-MM-DD")
+        let endDate = moment(this.state.end_date, "DD-MM-YYYY").format("YYYY-MM-DD")
 
         if (this.state.isLoading == true){
             return(
@@ -277,28 +220,13 @@ class VacationPage extends Component {
                 </Menu>
             );
         }else{
-            /* const myData = this.state.DataList;*/
-            const myData = [
-                {id:1, "name":"Mohammed Nur", "Start_date":20/2/201, "End_date":1/21/2010,"reason":"For fiver", "status":"Approve"},
-                {id:2, "name":"Mohammed Nur", "Start_date":20/2/201, "End_date":1/21/2010,"reason":"For fiver", "status":"Not Approve"},
-                {id:3, "name":"Mohammed Nur", "Start_date":20/2/201, "End_date":1/21/2010,"reason":"For fiver", "status":"Not Approve"},
-                {id:4, "name":"Mohammed Nur", "Start_date":20/2/201, "End_date":1/21/2010,"reason":"For fiver", "status":"Not Approve"},
-                {id:5, "name":"Mohammed Nur", "Start_date":20/2/201, "End_date":1/21/2010,"reason":"For fiver", "status":"Approve"},
-                {id:6, "name":"Mohammed Nur", "Start_date":20/2/201, "End_date":1/21/2010,"reason":"For fiver", "status":"Approve"},
-            ]
-
+             const myData = this.state.Vacation;
 
             const column = [{
-                dataField: 'id',
-                text: 'ID'
-            }, {
-                dataField: 'name',
-                text: 'Name'
-            }, {
-                dataField: 'Start_date',
+                dataField: 'start_date',
                 text: 'Start Date'
             },{
-                    dataField: 'End_date',
+                    dataField: 'end_date',
                     text: 'End Date'
                 },{
                 dataField: 'reason',
@@ -321,10 +249,10 @@ class VacationPage extends Component {
                     <Menu title="Project">
                         <Container fluid={true}>
                             <Row>
-                                <Col sm={12} md={12} lg={12}>
+                                <Col sm={8} md={8} lg={8}>
                                     <Card>
                                         <Card.Body>
-                                            <Button onClick={this.deleteData} className="normal-btn btn my-3">Delete</Button>
+                                            <Button onClick={this.deleteData} className="normal-btn btn my-3">{this.state.buttonText}</Button>
                                             <Button onClick={this.openModal} className="normal-btn btn ml-2">Add New</Button>
                                             <Button onClick={this.openUpdateModal} className="normal-btn btn ml-2">Update</Button>
                                             <BootstrapTable keyField='id' selectRow={selectRow} data={ myData } columns={ column } pagination={ paginationFactory() } />
@@ -353,17 +281,17 @@ class VacationPage extends Component {
                             <Form onSubmit={this.formSubmit}>
                                 <Form.Group>
                                     <Form.Label>Start Date</Form.Label>
-                                    <Form.Control  type="text" placeholder="Enter Start Date" />
+                                    <Form.Control value={start}  onChange={this.startDate}  type="date" format="DD-MM-YYYY" />
                                 </Form.Group>
 
                                 <Form.Group>
                                     <Form.Label>End Date</Form.Label>
-                                    <Form.Control  type="text" placeholder="Enter End Date" />
+                                    <Form.Control value={endDate} onChange={this.endDate}  type="date" format="DD-MM-YYYY"  />
                                 </Form.Group>
 
                                 <Form.Group>
                                     <Form.Label>Reason</Form.Label>
-                                    <ReactQuill style={{height:200}} />
+                                    <ReactQuill value={this.state.reason} onChange={this.reason} style={{height:200}} />
                                 </Form.Group>
 
                                   <br/>

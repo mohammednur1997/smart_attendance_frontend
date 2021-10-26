@@ -13,12 +13,22 @@ class EmployeeHomePage extends Component {
         this.state ={
             isLoading:true,
             isWrong:false,
-            Redirect:false
+            Redirect:false,
+            gender:'',
+            avater: profileImage
         }
     }
 
     componentDidMount() {
         this.checkLogin();
+
+        let employeeData =JSON.parse(sessionStorage.getItem("employee"))
+        let employeeImage = employeeData["image"];
+        if (employeeImage){
+            this.setState({
+                avater:  "http://127.0.0.1:8000/image/employee/"+employeeImage
+            })
+        }
     }
 
     checkLogin=()=>{
@@ -26,20 +36,6 @@ class EmployeeHomePage extends Component {
         if (loginCheck === "false"){
             this.setState({Redirect: true})
         }
-    }
-
-
-    getDaData=()=>{
-        Axios.get("https://admin.azmisoft.com/api/projectList")
-            .then((response)=>{
-                if (response.status == 200){
-                    this.setState({DataList:response.data, isLoading:false, isWrong:false})
-                }else{
-                    this.setState({isLoading:false, isWrong:true})
-                }
-            }).catch(()=>{
-            this.setState({isLoading:false, isWrong:true})
-        })
     }
 
 
@@ -52,6 +48,17 @@ class EmployeeHomePage extends Component {
     }
 
     render() {
+        let employeeData =JSON.parse(sessionStorage.getItem("employee"))
+            let employeeImage = employeeData["image"];
+            let employeeName = employeeData['name'];
+            let employeePosition = employeeData['job_position'];
+            let employeeSalary= employeeData['salary'];
+            let gender= employeeData['gender'];
+            let birthday= employeeData['birthday'];
+            let email = employeeData['email'];
+            let joinDate = employeeData['join_date'];
+
+
             return (
                 <Fragment>
                     <Menu title="Project">
@@ -59,13 +66,17 @@ class EmployeeHomePage extends Component {
                             <Row>
                                 <Col className="col-md-8">
                                     <Card style={{ width: '18rem' }}>
-                                        <Card.Img variant="top" src={profileImage} />
+                                        <Card.Img variant="top" src={ this.state.avater } width="500" />
                                         <Card.Body>
-                                            <Card.Title>Name: Mohammed Nur</Card.Title>
+                                            <Card.Title>Name: {employeeName}</Card.Title>
                                         </Card.Body>
                                         <ListGroup className="list-group-flush">
-                                            <ListGroupItem>Position: Manager</ListGroupItem>
-                                            <ListGroupItem>Salary: 2500 Sar</ListGroupItem>
+                                            <ListGroupItem>Position: {employeePosition}</ListGroupItem>
+                                            <ListGroupItem>Salary: {employeeSalary}</ListGroupItem>
+                                            <ListGroupItem>Gender: {gender}</ListGroupItem>
+                                            <ListGroupItem>BirthDay: {birthday}</ListGroupItem>
+                                            <ListGroupItem>Email: {email}</ListGroupItem>
+                                            <ListGroupItem>Join Date: {joinDate}</ListGroupItem>
                                         </ListGroup>
                                     </Card>
                                 </Col>

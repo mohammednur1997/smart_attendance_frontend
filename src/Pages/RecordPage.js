@@ -4,53 +4,37 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from "axios";
 import {Button, Card, Col, Container, Form, Modal, Row, Spinner} from "react-bootstrap";
+import {
+    ErrorMessage,
+    SuccessMessage,
+} from "../Helper/ToastHelper";
 import LoadingDiv from "../Components/loadingDiv";
 import WentWrong from "../Components/wentWrong";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactQuill from 'react-quill';
+import moment from "moment";
+import {AttendanceHost} from "../APIServices/APIServices";
 
 class RecordPage extends Component {
 
     constructor() {
         super();
         this.state ={
-            EmployeeData:[],
             isLoading:true,
             isWrong:false,
-            rowDataId:"",
-
-            title:"",
-            description:"",
-            feature:"",
-            PreviewLink:"",
-            CardImage:"",
-            projectImage:"",
             modelStatus:false,
 
-            salary:"UnDefine",
-            reward: "UnDefine",
-            deduction: "UnDefine",
-            salary_status: "UnDefine",
+            reward: "",
+            deduction: "",
+            salary_status: "UnPaid",
             attendance:[],
-            emId:""
-
+            emId:"",
+            status:"",
+            getDate:"",
+            present:""
 
         }
-
-        this.imageRender = this.imageRender.bind(this);
-        this.imageRenderPro = this.imageRenderPro.bind(this);
-
-        this.projectTitle = this.projectTitle.bind(this);
-        this.projectDes = this.projectDes.bind(this);
-        this.projectFeature = this.projectFeature.bind(this);
-        this.projectPreviewLink = this.projectPreviewLink.bind(this);
-        this.projectCardImage = this.projectCardImage.bind(this);
-        this.projectImage = this.projectImage.bind(this);
-
-        this.openModal = this.openModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-
     }
 
     componentDidMount() {
@@ -58,99 +42,125 @@ class RecordPage extends Component {
         this.getDataByDate();
     }
 
-    getAttendance(){
+    getAttendance=()=>{
         let employee_id = sessionStorage.getItem("employeeId");
 
          this.setState({isLoading: true})
         Axios.get("http://127.0.0.1:8000/api/GetAttendanceById/"+ employee_id)
-
             .then((response)=>{
-                console.log(response.data.attendance)
-                if (response.status == 200){
+                if (response.status === 200 && response.data.result === "pass"){
                     this.setState({attendance:response.data.attendance, isLoading:false, isWrong:false})
+                }else if(response.status === 200 && response.data.attendance == null){
+                    SuccessMessage("Welcome to your first Office")
                 }else{
-                    this.setState({isLoading:false, isWrong:true})
+                    SuccessMessage("Welcome to your first Office")
+                    /*this.setState({isLoading:false, isWrong:true})*/
                 }
 
             }).catch(()=>{
-            this.setState({isLoading:false, isWrong:true})
+            SuccessMessage("Welcome to your first Office")
+            /*this.setState({isLoading:false, isWrong:true})*/
         })
     }
 
-    getDataByDate(){
+    getDataByDate=()=>{
         let employee_id = sessionStorage.getItem("employeeId");
         this.setState({isLoading: true})
         Axios.get("http://127.0.0.1:8000/api/getDataByDate/"+ employee_id)
             .then((response)=>{
                 if (response.status == 200){
-                    this.setState({
-                        EmployeeData:response.data.EmployeeData,
-                        salary:response.data.EmployeeData.salary,
-                        reward:response.data.EmployeeData.re_amount,
-                        deduction:response.data.EmployeeData.dd_amount,
-                        salary_status:response.data.EmployeeData.salary_status,
-                        isWrong:false
-                    })
+                    if (response.data.salary.length === 0){
+                        this.setState({
+                            reward:response.data.reward,
+                            deduction:response.data.deduction,
+                            salary_status:"Unpaid",
+                            isWrong:false
+                        })
+                    }else {
+                        this.setState({
+                            reward:response.data.reward,
+                            deduction:response.data.deduction,
+                            salary_status:response.data.salary,
+                            isWrong:false
+                        })
+                    }
                 }else{
-                    this.setState({isLoading:false, isWrong:true})
+                    SuccessMessage("Welcome to your first Office")
+                    /*this.setState({isLoading:false, isWrong:true})*/
                 }
 
             }).catch(()=>{
-            this.setState({isLoading:false, isWrong:true})
+            SuccessMessage("Welcome to your first Office")
+            /*this.setState({isLoading:false, isWrong:true})*/
         })
     }
 
 
 
-    openModal(){
+    openModal=()=>{
         this.setState({modelStatus: true})
     }
 
-    closeModal(){
+    closeModal=()=>{
         this.setState({modelStatus: false})
     }
 
-    projectTitle(event){
-        let title =  event.target.value;
-        this.setState({title: title})
+    getDate=(event)=>{
+        let date = event.target.value;
+        this.setState({getDate: date})
     }
 
-    projectDes(content, delta, source, editor){
-        let myContent = editor.getText();
-        this.setState({description: myContent})
+    present=(event)=>{
+        let present = event.target.value;
+        this.setState({present: present})
     }
 
-    projectFeature(content, delta, source, editor){
-        let myContent = editor.getHTML();
-        this.setState({feature: myContent})
+    search=(event)=>{
+        let date = this.state.getDate;
+        let present = this.state.present;
+        let employee_id = sessionStorage.getItem("employeeId")
+
+        let data = new FormData;
+        data.append('date', date);
+        data.append('employee_id', employee_id);
+        data.append('present', present);
+        let config = {
+            headers:{
+                'content-type':"multipart/form-data"
+            }
+        }
+
+        let url = AttendanceHost()+"/api/search/front";
+        this.setState({
+            isLoading:true
+        })
+        Axios.post(url, data, config)
+            .then(response =>{
+                if (response.status === 200){
+                    this.setState({attendance:response.data.record, isLoading:false, isWrong:false})
+                  /*  this.componentDidMount();*/
+                }else{
+                    this.setState({isLoading:false})
+                    SuccessMessage("Something Wrong!")
+                 /*   this.componentDidMount();*/
+                }
+
+            })
+            .catch(error =>{
+                this.setState({isLoading:false})
+                SuccessMessage("Something Wrong!")
+            })
+        event.preventDefault();
+
+
     }
 
-    projectPreviewLink(event){
-        let link =  event.target.value;
-        this.setState({PreviewLink: link})
-    }
-
-    projectCardImage(event){
-        let CardPhoto =  event.target.files[0];
-        this.setState({CardImage: CardPhoto})
-    }
-
-    projectImage(event){
-        let proPhoto =  event.target.files[0];
-        this.setState({projectImage: proPhoto})
-    }
 
 
 
-    imageRender(cell, row){
-        return <img className="table-cell-img" src={cell} alt="No Image"/>
-    }
-    imageRenderPro(cell, row){
-        return <img className="table-cell-img" src={cell} alt="No Image"/>
-    }
+
 
     render() {
-
         if (this.state.isLoading == true){
             return(
                 <Menu>
@@ -169,6 +179,13 @@ class RecordPage extends Component {
                 </Menu>
             );
         }else{
+            let today =  moment().format("YYYY-MM-DD")
+
+
+            let getSalary = JSON.parse(sessionStorage.getItem("employee"));
+            let salary = getSalary['salary']
+
+
              const myData = this.state.attendance;
             const column = [{
                 dataField: 'present_status',
@@ -192,12 +209,6 @@ class RecordPage extends Component {
                 }
                 ];
 
-         /*   const selectRow = {
-                mode:"radio",
-                onSelect:(row, isSelect, rowIndex)=>{
-                    this.setState({rowDataId:row.id})
-                }
-            }*/
 
             return (
                 <Fragment>
@@ -206,38 +217,45 @@ class RecordPage extends Component {
 
                             <Row className="mb-2">
                                 <Col sm={4} md={4} lg={4}>
-                                    <select className="form-control">
-                                        <option value="A">Today</option>
-                                        <option value="B">This Month</option>
+                                    <select onChange={this.getDate} className="form-control">
+                                        <option value={today}>Today</option>
+                                        <option value="month">This Month</option>
                                     </select>
                                 </Col>
 
                                 <Col sm={4} md={4} lg={4}>
-                                    <select className="form-control">
-                                        <option value="A">Present</option>
-                                        <option value="B">Absence</option>
+                                    <select onChange={this.present} className="form-control">
+                                        <option value="present">Present</option>
+                                        <option value="absence">Absence</option>
                                     </select>
                                 </Col>
+
+                                <Col sm={2} md={2} lg={2}>
+                                    <Button variant="primary" onClick={this.search} type="submit">
+                                        Search
+                                    </Button>
+                                </Col>
+
                             </Row>
 
                             <Row className="mb-2">
                                 <Col sm={3} md={3} lg={3}>
                                     <Card className="bg-white text-black p-4">
-                                            <Card.Title>{this.state.salary}</Card.Title>
+                                            <Card.Title>{salary}</Card.Title>
                                             <Card.Text>Net Salary</Card.Text>
                                     </Card>
                                 </Col>
 
                                 <Col sm={3} md={3} lg={3}>
                                     <Card className="bg-white text-black p-4">
-                                        <Card.Title>{Number(this.state.salary) + Number(this.state.reward)}</Card.Title>
+                                        <Card.Title>{Number(salary) + Number(this.state.reward)}</Card.Title>
                                         <Card.Text>Gross Salary</Card.Text>
                                     </Card>
                                 </Col>
 
                                 <Col sm={3} md={3} lg={3}>
                                     <Card className="bg-white text-black p-4">
-                                        <Card.Title>{this.state.deduction}</Card.Title>
+                                        <Card.Title>{Number(this.state.deduction)}</Card.Title>
                                         <Card.Text>Deduction</Card.Text>
                                     </Card>
                                 </Col>
