@@ -15,6 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import ReactQuill from 'react-quill';
 import moment from "moment";
 import {AttendanceHost} from "../APIServices/APIServices";
+import filterFactory, { selectFilter, dateFilter  } from 'react-bootstrap-table2-filter';
 
 class RecordPage extends Component {
 
@@ -157,9 +158,6 @@ class RecordPage extends Component {
 
 
 
-
-
-
     render() {
         if (this.state.isLoading == true){
             return(
@@ -186,13 +184,33 @@ class RecordPage extends Component {
             let salary = getSalary['salary']
 
 
+
              const myData = this.state.attendance;
+            const selectOptions = {
+                "present": 'present',
+                "absence": 'absence',
+            };
+
+            const selectOptions1 = {
+                "yes": 'yes',
+                "no": 'no',
+            };
+
+
             const column = [{
                 dataField: 'present_status',
-                text: 'Present Status'
+                text: 'Present Status',
+                formatter: cell => selectOptions[cell],
+                filter: selectFilter({
+                    options: selectOptions,
+                })
             },{
                 dataField: 'late',
-                text: 'Late'
+                text: 'Late',
+                formatter: cell => selectOptions1[cell],
+                filter: selectFilter({
+                    options: selectOptions1,
+                })
             }
             ,{
                 dataField: 'check_in',
@@ -205,7 +223,8 @@ class RecordPage extends Component {
                 text: 'Day'
               },{
                     dataField: 'date',
-                    text: 'Date'
+                    text: 'Date',
+                    filter: dateFilter()
                 }
                 ];
 
@@ -215,7 +234,7 @@ class RecordPage extends Component {
                     <Menu title="Project">
                         <Container fluid={true}>
 
-                            <Row className="mb-2">
+                           {/* <Row className="mb-2">
                                 <Col sm={4} md={4} lg={4}>
                                     <select onChange={this.getDate} className="form-control">
                                         <option value={today}>Today</option>
@@ -236,7 +255,7 @@ class RecordPage extends Component {
                                     </Button>
                                 </Col>
 
-                            </Row>
+                            </Row>*/}
 
                             <Row className="mb-2">
                                 <Col sm={3} md={3} lg={3}>
@@ -272,22 +291,12 @@ class RecordPage extends Component {
                                 <Col sm={12} md={12} lg={12}>
                                     <Card>
                                         <Card.Body>
-                                            <BootstrapTable footerTitle={true} keyField='id'  data={ myData } columns={ column } pagination={ paginationFactory() } />
+                                            <BootstrapTable footerTitle={true} keyField='id'  data={ myData } columns={ column } filter={ filterFactory() } pagination={ paginationFactory() } noDataIndication="No Data Found" />
                                         </Card.Body>
                                     </Card>
                                 </Col>
                             </Row>
-                            <ToastContainer
-                                position="bottom-center"
-                                autoClose={3000}
-                                hideProgressBar={false}
-                                newestOnTop={false}
-                                closeOnClick
-                                rtl={false}
-                                pauseOnFocusLoss={false}
-                                draggable={false}
-                                pauseOnHover={false}
-                            />
+
                         </Container>
                     </Menu>
                     <Modal show={this.state.modelStatus} onHide={this.closeModal} size='lg'>

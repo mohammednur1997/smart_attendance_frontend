@@ -16,8 +16,12 @@ class APIServices{
     }
 
      //AttendanceUrl
-    onAttendanceURL(){
-        return "http://127.0.0.1:8000/api/attendance"
+    onCheckInURL(){
+        return "http://127.0.0.1:8000/api/attendance/checkIn"
+    }
+
+    onCheckOutURL(){
+        return "http://127.0.0.1:8000/api/attendance/checkOut"
     }
 
     onEmployeeLoginUrl(){
@@ -84,5 +88,7 @@ export const {
     onAttendanceURL,
     onEmployeeLoginUrl,
     onLoginBody,
-    AttendanceHost
+    AttendanceHost,
+    onCheckInURL,
+    onCheckOutURL
 }=new APIServices();
