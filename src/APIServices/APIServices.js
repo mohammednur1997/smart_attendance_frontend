@@ -24,6 +24,10 @@ class APIServices{
         return "http://127.0.0.1:8000/api/attendance/checkOut"
     }
 
+    onResetPasswordURL(){
+        return "http://127.0.0.1:8000/api/changePass"
+    }
+
     onEmployeeLoginUrl(){
         return "http://127.0.0.1:8000/api/login"
     }
@@ -50,6 +54,14 @@ class APIServices{
             date:date,
             in_time:in_time,
             day:day,
+        }
+    }
+
+    onResetPassBody(employee_id, newPass, oldPass){
+        return{
+            employee_id:employee_id,
+            newPass:newPass,
+            oldPass:oldPass
         }
     }
 
@@ -90,5 +102,7 @@ export const {
     onLoginBody,
     AttendanceHost,
     onCheckInURL,
-    onCheckOutURL
+    onCheckOutURL,
+    onResetPassBody,
+    onResetPasswordURL
 }=new APIServices();

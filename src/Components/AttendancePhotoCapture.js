@@ -15,14 +15,9 @@ class AttendancePhotoCapture extends Component {
             loaderDIV:"d-none",
             PreviewSpinner:"",
             spinner:spinner,
-            photoSrc:imagePlaceholder,
-            EPhoto:false,
-            CameraError:false,
             Redirect:false,
-            Eid:"",
             atten:""
         }
-        this.cameraRef=React.createRef();
     }
 
         getAttendance=()=>{
@@ -32,9 +27,9 @@ class AttendancePhotoCapture extends Component {
            let end_time = moment().format(' h:mm a');
             let date  = moment().format('YYYY-MM-DD');
 
-           if(this.state.atten == 1){
+           if(this.state.atten === "1"){
                this.startWorkHours(employeeId, date, start_time, day);
-           }else if(this.state.atten == 2){
+           }else if(this.state.atten === "2"){
                this.EndWorkHours(employeeId, date, end_time, day);
             }
 
@@ -43,9 +38,8 @@ class AttendancePhotoCapture extends Component {
     startWorkHours=(employee_id, date,in_time, day)=>{
 
         this.setState({loaderDIV:""})
-        axios.post(onCheckInURL(),onStartWorkBody(
-            employee_id, date,in_time, day
-        )).then((res)=>{
+        axios.post(onCheckInURL(),onStartWorkBody(employee_id, date,in_time, day))
+            .then((res)=>{
             this.setState({loaderDIV:"d-none"})
             if(res.status===200 && res.data.result === "pass"){
                 SuccessMessage(res.data.message);
@@ -55,15 +49,15 @@ class AttendancePhotoCapture extends Component {
             }
         }).catch((err)=>{
             this.setState({loaderDIV:"d-none"})
-            ErrorMessage(res.data.message);
+            ErrorMessage("Something Want wrong");
         })
     }
 
     EndWorkHours=(employee_id, date, end_time, day)=>{
+
         this.setState({loaderDIV:""})
-        axios.post(onCheckOutURL(),onEndWorkBody(
-            employee_id, date, end_time, day
-        )).then((res)=>{
+        axios.post(onCheckOutURL(),onEndWorkBody(employee_id, date, end_time, day))
+            .then((res)=>{
             this.setState({loaderDIV:"d-none"})
             if(res.status===200 && res.data.result === "pass"){
                 SuccessMessage(res.data.message);
@@ -73,7 +67,7 @@ class AttendancePhotoCapture extends Component {
             }
         }).catch((err)=>{
             this.setState({loaderDIV:"d-none"})
-            ErrorMessage(res.data.message);
+            ErrorMessage("Something Want wrong");
         })
     }
 
