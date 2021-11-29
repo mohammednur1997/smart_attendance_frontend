@@ -11,6 +11,7 @@ import VacationPage from "../Pages/Vacation";
 import EmployeeHomePage from "../Pages/EmployeeHomePage";
 import LogoutPage from "../Pages/logoutPage";
 import ResetPasswordPage from "../Pages/ResetPasswordPage";
+import MessagePage from "../Pages/Message";
 
 class AppRouting extends Component {
     render() {
@@ -27,6 +28,7 @@ class AppRouting extends Component {
                     <Route exact path="/AttendancePhoto" render={(props) => <AttendancePhotoCapturePage {...props} />}/>
                     <Route exact path="/AttendanceInfo" render={(props) => <AttendanceInfoPage {...props} />}/>
                     <Route exact path="/ResetPassword" render={(props) => <ResetPasswordPage{...props} />}/>
+                    <Route exact path="/Message" render={(props) => <MessagePage{...props} />}/>
                     <Route exact path="/logout" render={(props) => <LogoutPage {...props} />}/>
                 </Switch>
             </Fragment>

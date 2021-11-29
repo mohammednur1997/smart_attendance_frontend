@@ -44,6 +44,7 @@ class Menu extends Component {
                     <NavLink><Link className="NavItem" to="/AttendancePhoto"> <FontAwesomeIcon icon={faUserCheck} /><span className={this.state.NavText}> Attendance</span></Link></NavLink>
                     <NavLink><Link className="NavItem" to="/record"> <FontAwesomeIcon icon={faUserEdit} /><span className={this.state.NavText}> Record</span></Link></NavLink>
                     <NavLink><Link className="NavItem" to="/vacation"> <FontAwesomeIcon icon={faReply} /><span className={this.state.NavText}> Vacation</span></Link></NavLink>
+                    <NavLink><Link className="NavItem" to="/Message"> <FontAwesomeIcon icon={faComment} /><span className={this.state.NavText}> Message</span></Link></NavLink>
                     <NavLink><Link className="NavItem" to="/ResetPassword"> <FontAwesomeIcon icon={faCog} /><span className={this.state.NavText}> Setting</span></Link></NavLink>
                     <NavLink><Link className="NavItem" to="/logout"> <FontAwesomeIcon icon={faPowerOff} /><span className={this.state.NavText}> LogOut</span></Link></NavLink>
 
