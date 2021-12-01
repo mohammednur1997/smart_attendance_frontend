@@ -33,7 +33,8 @@ class RecordPage extends Component {
             emId:"",
             status:"",
             getDate:"",
-            present:""
+            present:"",
+            gross:""
 
         }
     }
@@ -41,6 +42,7 @@ class RecordPage extends Component {
     componentDidMount() {
         this.getAttendance();
         this.getDataByDate();
+        this.getGrossSalary();
     }
 
     getAttendance=()=>{
@@ -93,6 +95,21 @@ class RecordPage extends Component {
             }).catch(()=>{
             SuccessMessage("Welcome to your first Office")
             /*this.setState({isLoading:false, isWrong:true})*/
+        })
+    }
+
+    getGrossSalary=()=>{
+        let employee_id = sessionStorage.getItem("employeeId");
+        Axios.get("http://127.0.0.1:8000/api/grossSalary/"+ employee_id)
+            .then((response)=>{
+                if (response.status == 200){
+                        this.setState({
+                            gross:response.data.gross,
+                        })
+                }
+
+            }).catch(()=>{
+            ErrorMessage("Fail to Get Gross Salary")
         })
     }
 
@@ -179,7 +196,6 @@ class RecordPage extends Component {
         }else{
             let today =  moment().format("YYYY-MM-DD")
 
-
             let getSalary = JSON.parse(sessionStorage.getItem("employee"));
             let salary = getSalary['salary']
 
@@ -234,36 +250,8 @@ class RecordPage extends Component {
                     <Menu title="Project">
                         <Container fluid={true}>
 
-                           {/* <Row className="mb-2">
-                                <Col sm={4} md={4} lg={4}>
-                                    <select onChange={this.getDate} className="form-control">
-                                        <option value={today}>Today</option>
-                                        <option value="month">This Month</option>
-                                    </select>
-                                </Col>
-
-                                <Col sm={4} md={4} lg={4}>
-                                    <select onChange={this.present} className="form-control">
-                                        <option value="present">Present</option>
-                                        <option value="absence">Absence</option>
-                                    </select>
-                                </Col>
-
-                                <Col sm={2} md={2} lg={2}>
-                                    <Button variant="primary" onClick={this.search} type="submit">
-                                        Search
-                                    </Button>
-                                </Col>
-
-                            </Row>*/}
 
                             <Row className="mb-2">
-                                <Col sm={3} md={3} lg={3}>
-                                    <Card className="bg-white text-black p-4">
-                                            <Card.Title>{salary}</Card.Title>
-                                            <Card.Text>Net Salary</Card.Text>
-                                    </Card>
-                                </Col>
 
                                 <Col sm={3} md={3} lg={3}>
                                     <Card className="bg-white text-black p-4">
@@ -274,12 +262,28 @@ class RecordPage extends Component {
 
                                 <Col sm={3} md={3} lg={3}>
                                     <Card className="bg-white text-black p-4">
+                                            <Card.Title>{Number(this.state.gross)}</Card.Title>
+                                            <Card.Text>Net Salary</Card.Text>
+                                    </Card>
+                                </Col>
+
+
+                                <Col sm={2} md={2} lg={2}>
+                                    <Card className="bg-white text-black p-4">
                                         <Card.Title>{Number(this.state.deduction)}</Card.Title>
                                         <Card.Text>Deduction</Card.Text>
                                     </Card>
                                 </Col>
 
-                                <Col sm={3} md={3} lg={3}>
+
+                                <Col sm={2} md={2} lg={2}>
+                                    <Card className="bg-white text-black p-4">
+                                        <Card.Title>{Number(this.state.reward)}</Card.Title>
+                                        <Card.Text>Reward</Card.Text>
+                                    </Card>
+                                </Col>
+
+                                <Col sm={2} md={2} lg={2}>
                                     <Card className="bg-white text-black p-4">
                                         <Card.Title>{this.state.salary_status}</Card.Title>
                                         <Card.Text>Salary Status</Card.Text>
