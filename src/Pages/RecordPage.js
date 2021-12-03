@@ -34,7 +34,8 @@ class RecordPage extends Component {
             status:"",
             getDate:"",
             present:"",
-            gross:""
+            amount_paid:"",
+            date:""
 
         }
     }
@@ -42,7 +43,7 @@ class RecordPage extends Component {
     componentDidMount() {
         this.getAttendance();
         this.getDataByDate();
-        this.getGrossSalary();
+        this.RunningMonthSalary();
     }
 
     getAttendance=()=>{
@@ -98,18 +99,26 @@ class RecordPage extends Component {
         })
     }
 
-    getGrossSalary=()=>{
+    RunningMonthSalary=()=>{
         let employee_id = sessionStorage.getItem("employeeId");
         Axios.get("http://127.0.0.1:8000/api/grossSalary/"+ employee_id)
             .then((response)=>{
-                if (response.status == 200){
-                        this.setState({
-                            gross:response.data.gross,
-                        })
+                if (response.status === 200){
+                    this.setState({
+                        reward:response.data.monthlyData.reward_salary,
+                        deduction:response.data.monthlyData.deducation_salary,
+                        amount_paid:response.data.monthlyData.amount_paid,
+                        salary_status : response.data.monthlyData.salary_status,
+                        isLoading:false, isWrong:false
+                    })
+                }else{
+                    this.setState({isLoading:false})
+                    ErrorMessage("Something Wrong!")
                 }
 
             }).catch(()=>{
-            ErrorMessage("Fail to Get Gross Salary")
+            this.setState({isLoading:false})
+            ErrorMessage("This Month Salary Are UnPaid!")
         })
     }
 
@@ -133,40 +142,43 @@ class RecordPage extends Component {
         this.setState({present: present})
     }
 
-    search=(event)=>{
-        let date = this.state.getDate;
-        let present = this.state.present;
+
+    startDate=(event)=>{
+        let start =  event.target.value;
         let employee_id = sessionStorage.getItem("employeeId")
 
         let data = new FormData;
-        data.append('date', date);
+        data.append('date', start);
         data.append('employee_id', employee_id);
-        data.append('present', present);
         let config = {
             headers:{
                 'content-type':"multipart/form-data"
             }
         }
 
-        let url = AttendanceHost()+"/api/search/front";
+        let url = AttendanceHost()+"/api/calculatePerMonth";
         this.setState({
             isLoading:true
         })
         Axios.post(url, data, config)
             .then(response =>{
                 if (response.status === 200){
-                    this.setState({attendance:response.data.record, isLoading:false, isWrong:false})
-                  /*  this.componentDidMount();*/
+                    this.setState({
+                        reward:response.data.monthlyData.reward_salary,
+                        deduction:response.data.monthlyData.deducation_salary,
+                        amount_paid:response.data.monthlyData.amount_paid,
+                        salary_status : response.data.monthlyData.salary_status,
+                        isLoading:false, isWrong:false
+                    })
                 }else{
                     this.setState({isLoading:false})
-                    SuccessMessage("Something Wrong!")
-                 /*   this.componentDidMount();*/
+                    ErrorMessage("Something Wrong!")
                 }
 
             })
             .catch(error =>{
                 this.setState({isLoading:false})
-                SuccessMessage("Something Wrong!")
+                ErrorMessage("This Month Salary Are UnPaid!")
             })
         event.preventDefault();
 
@@ -250,20 +262,19 @@ class RecordPage extends Component {
                     <Menu title="Project">
                         <Container fluid={true}>
 
-
                             <Row className="mb-2">
-
-                                <Col sm={3} md={3} lg={3}>
+                                <Col sm={2} md={2} lg={2}>
                                     <Card className="bg-white text-black p-4">
                                         <Card.Title>{Number(salary) + Number(this.state.reward)}</Card.Title>
                                         <Card.Text>Gross Salary</Card.Text>
                                     </Card>
                                 </Col>
 
-                                <Col sm={3} md={3} lg={3}>
+
+                                <Col sm={2} md={2} lg={2}>
                                     <Card className="bg-white text-black p-4">
-                                            <Card.Title>{Number(this.state.gross)}</Card.Title>
-                                            <Card.Text>Net Salary</Card.Text>
+                                        <Card.Title>{Number(this.state.amount_paid)}</Card.Title>
+                                        <Card.Text>Paid Amount</Card.Text>
                                     </Card>
                                 </Col>
 
@@ -289,6 +300,16 @@ class RecordPage extends Component {
                                         <Card.Text>Salary Status</Card.Text>
                                     </Card>
                                 </Col>
+
+                                <Col sm={2} md={2} lg={2}>
+                                    <Card className="bg-white text-black p-4">
+                                        <Form.Group>
+                                            <Form.Label>Filter Date</Form.Label>
+                                            <Form.Control  onChange={this.startDate}  type="date" format="DD-MM-YYYY" />
+                                        </Form.Group>
+                                    </Card>
+                                </Col>
+
                             </Row>
 
                             <Row>
