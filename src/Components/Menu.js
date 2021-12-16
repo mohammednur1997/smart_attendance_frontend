@@ -1,7 +1,7 @@
 import React, {Component, Fragment} from 'react';
 import {Navbar,NavLink} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faBars, faHome,faEnvelope,faBookOpen,faCode,faFolder,faComment,faPowerOff, faAd, faUserCheck, faUserEdit, faReply, faCog} from "@fortawesome/free-solid-svg-icons";
+import {faBars, faHome,faComment,faPowerOff, faAd, faUserCheck, faUserEdit, faReply, faCog, faUserCog} from "@fortawesome/free-solid-svg-icons";
 
 import {Link} from "react-router-dom";
 
@@ -41,11 +41,12 @@ class Menu extends Component {
 
                 <div className={this.state.sideNavClass}>
                     <NavLink> <Link className="NavItem" to="/home"> <FontAwesomeIcon icon={faHome} /><span className={this.state.NavText}> Home</span></Link></NavLink>
-                    <NavLink><Link className="NavItem" to="/AttendancePhoto"> <FontAwesomeIcon icon={faUserCheck} /><span className={this.state.NavText}> Attendance</span></Link></NavLink>
+                    <NavLink><Link className="NavItem" to="/Attendance"> <FontAwesomeIcon icon={faUserCheck} /><span className={this.state.NavText}> Attendance</span></Link></NavLink>
                     <NavLink><Link className="NavItem" to="/record"> <FontAwesomeIcon icon={faUserEdit} /><span className={this.state.NavText}> Record</span></Link></NavLink>
                     <NavLink><Link className="NavItem" to="/vacation"> <FontAwesomeIcon icon={faReply} /><span className={this.state.NavText}> Vacation</span></Link></NavLink>
                     <NavLink><Link className="NavItem" to="/Message"> <FontAwesomeIcon icon={faComment} /><span className={this.state.NavText}> Message</span></Link></NavLink>
                     <NavLink><Link className="NavItem" to="/ResetPassword"> <FontAwesomeIcon icon={faCog} /><span className={this.state.NavText}> Setting</span></Link></NavLink>
+                    <NavLink><Link className="NavItem" to="/RegistrationPhoto"> <FontAwesomeIcon icon={faUserCog} /><span className={this.state.NavText}> Scan Face</span></Link></NavLink>
                     <NavLink><Link className="NavItem" to="/logout"> <FontAwesomeIcon icon={faPowerOff} /><span className={this.state.NavText}> LogOut</span></Link></NavLink>
 
                 </div>

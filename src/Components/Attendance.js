@@ -7,7 +7,7 @@ import {SuccessMessage, ErrorMessage} from "../Helper/ToastHelper";
 import moment from "moment";
 import axios from "axios";
 import {onStartWorkBody, onCheckInURL,onCheckOutURL, onEndWorkBody} from "../APIServices/APIServices";
-class AttendancePhotoCapture extends Component {
+class Attendance extends Component {
 
     constructor() {
         super();
@@ -98,4 +98,4 @@ class AttendancePhotoCapture extends Component {
     }
 }
 
-export default AttendancePhotoCapture;
+export default Attendance;

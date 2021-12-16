@@ -2,9 +2,8 @@ import React, {Component, Fragment} from 'react';
 import Switch from "react-bootstrap/Switch";
 import {Route} from "react-router";
 import RegistrationPhotoCapturePage from "../Pages/RegistrationPhotoCapturePage";
-import AttendancePhotoCapturePage from "../Pages/AttendancePhotoCapturePage";
+import AttendancePage from "../Pages/AttendancePage";
 import RegistrationInfoPage from "../Pages/RegistrationInfoPage";
-import AttendanceInfoPage from "../Pages/AttendanceInfoPage";
 import LoginPage from "../Pages/LoginPage";
 import RecordPage from "../Pages/RecordPage";
 import VacationPage from "../Pages/Vacation";
@@ -25,8 +24,7 @@ class AppRouting extends Component {
                     <Route exact path="/RegistrationPhoto" render={(props) => <RegistrationPhotoCapturePage {...props} />}/>
                     <Route exact path="/RegistrationInfo" render={(props) => <RegistrationInfoPage {...props} />}/>
 
-                    <Route exact path="/AttendancePhoto" render={(props) => <AttendancePhotoCapturePage {...props} />}/>
-                    <Route exact path="/AttendanceInfo" render={(props) => <AttendanceInfoPage {...props} />}/>
+                    <Route exact path="/Attendance" render={(props) => <AttendancePage {...props} />}/>
                     <Route exact path="/ResetPassword" render={(props) => <ResetPasswordPage{...props} />}/>
                     <Route exact path="/Message" render={(props) => <MessagePage{...props} />}/>
                     <Route exact path="/logout" render={(props) => <LogoutPage {...props} />}/>

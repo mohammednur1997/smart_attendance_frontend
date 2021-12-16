@@ -4,9 +4,14 @@ import JEEFACETRANSFERAPI from '../WebGL1/jeelizFaceTransfer.module';
 import Webcam from "react-webcam";
 import SweetAlert from "react-bootstrap-sweetalert";
 import {Redirect} from "react-router";
-import {RequiredPhoto} from "../Helper/ToastHelper";
+import {RegistrationSuccess, RequestFail, RequiredPhoto} from "../Helper/ToastHelper";
 import imagePlaceholder from '../Assets/Image/imagePlaceholder.svg'
 import spinner from '../Assets/Image/spinner.svg'
+import axios from "axios";
+import {onRegistrationBody, onRegistrationURL} from "../APIServices/APIServices";
+import * as faceapi from "face-api.js";
+import Loader from "./Loader";
+
 
 class RegistrationPhotoCapture extends Component {
 
@@ -18,7 +23,9 @@ class RegistrationPhotoCapture extends Component {
             photoSrc:imagePlaceholder,
             EPhoto:false,
             CameraError:false,
-            Redirect:false
+            Redirect:false,
+            loaderDIV:"d-none",
+
         }
         this.cameraRef=React.createRef();
     }
@@ -49,12 +56,12 @@ class RegistrationPhotoCapture extends Component {
         setInterval(()=>{
             let FaceMovement=  JEEFACETRANSFERAPI.get_morphTargetInfluences();
             if(JEEFACETRANSFERAPI.is_detected()){
-               /* let RightEye= FaceMovement[8];
+                let RightEye= FaceMovement[8];
                 let LeftEye= FaceMovement[9];
                 if(RightEye>=0.75  && LeftEye>=0.75){
                     this.onCapture();
-                }*/
-                this.onCapture();
+                }
+               /* this.onCapture();*/
             }
         },1000)
     }
@@ -63,7 +70,6 @@ class RegistrationPhotoCapture extends Component {
         setTimeout(()=>{
             if(this.cameraRef.current!==null){
                 let PhotoBase64= this.cameraRef.current.getScreenshot();
-                sessionStorage.setItem('photoSrc',PhotoBase64);
                 this.setState({photoSrc:PhotoBase64,EPhoto:true})
             }
 
@@ -87,13 +93,49 @@ class RegistrationPhotoCapture extends Component {
     }
 
     next=()=>{
+        let Eid = sessionStorage.getItem("employeeId")
         if(this.state.EPhoto===true){
-            this.setState({Redirect:true})
+            this.PhotoDesCal(Eid);
         }
+
         else {
             RequiredPhoto();
         }
     }
+
+
+    postRegistrationData=(employee_id,photo_descriptor)=>{
+        this.setState({loaderDIV:""})
+        axios.post(onRegistrationURL(),onRegistrationBody(
+            employee_id,photo_descriptor
+        )).then((res)=>{
+            this.setState({loaderDIV:"d-none"})
+            if(res.status===200 && res.data===1){
+                RegistrationSuccess();
+            }
+            else {
+                RequestFail();
+            }
+        }).catch((err)=>{
+            this.setState({loaderDIV:"d-none"})
+            RequestFail();
+        })
+    }
+
+
+    PhotoDesCal=(employee_id)=>{
+        (async ()=>{
+            this.setState({loaderDIV:""})
+            await  faceapi.loadSsdMobilenetv1Model('/model1');
+            await  faceapi.loadFaceLandmarkModel('/model1');
+            await  faceapi.loadFaceRecognitionModel('/model1');
+            const img = document.getElementById('PersonPhoto')
+            const imgDes= await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
+            let photo_descriptor= JSON.stringify(Array.from(imgDes['descriptor']))
+            this.postRegistrationData(employee_id,photo_descriptor)
+        })()
+    }
+
     pageRedirect=()=>{
         if(this.state.Redirect===true){
             return (
@@ -101,21 +143,19 @@ class RegistrationPhotoCapture extends Component {
             )
         }
     }
+
     render() {
         return (
             <Fragment>
                 <Container>
                     <Row className="d-flex text-center justify-content-center">
-                        <Col className="text-center text-danger  p-3" md={4} sm={12} lg={4}>
-                            <h4>Open and close your eye to capture the picture</h4>
-                        </Col>
                         <Col className="text-center " md={4} sm={12} lg={4}>
                             <img className={this.state.PreviewSpinner+" w-50"} src={this.state.spinner}/>
                             <canvas className="canvasClass" id="canvasID"/>
                         </Col>
                         <Col className="text-center" md={4} sm={12} lg={4}>
                             <img id="PersonPhoto" className="preview-img" src={this.state.photoSrc}/>
-                            <button onClick={this.next} className="btn m-3 btn-block btn-danger">Next</button>
+                            <button onClick={this.next} className="btn m-3 btn-block btn-danger">Register</button>
                         </Col>
                     </Row>
                 </Container>
@@ -131,6 +171,10 @@ class RegistrationPhotoCapture extends Component {
                         />
                     </Col>
                 </Row>
+
+                <div className={this.state.loaderDIV}>
+                    <Loader/>
+                </div>
 
                 {this.CameraErrorAlert()}
                 {this.pageRedirect()}

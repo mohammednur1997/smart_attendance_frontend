@@ -2,7 +2,7 @@ class APIServices{
 
     // List
     onListURL(){
-        return "https://mobileecom.azmisoft.com/api/list"
+        return "http://127.0.0.1:8000/api/list"
     }
 
     AttendanceHost(){
@@ -12,7 +12,7 @@ class APIServices{
 
     // Registration
     onRegistrationURL(){
-        return "https://mobileecom.azmisoft.com/api/registration"
+        return "http://127.0.0.1:8000/api/registerEmployee"
     }
 
      //AttendanceUrl
@@ -39,11 +39,9 @@ class APIServices{
         }
     }
 
-    onRegistrationBody(name,employee_id,employee_mobile,photo_descriptor){
+    onRegistrationBody(employee_id,photo_descriptor){
             return{
-                name:name,
                 employee_id:employee_id,
-                employee_mobile:employee_mobile,
                 photo_descriptor:photo_descriptor,
             }
     }
@@ -74,10 +72,6 @@ class APIServices{
         }
     }
 
-    // AttendancePhotoCapture
-   /* onAttendanceURL(){
-        return "https://mobileecom.azmisoft.com/api/attendance"
-    }*/
 
     onAttendanceBody(name,employee_id,employee_mobile){
         return{

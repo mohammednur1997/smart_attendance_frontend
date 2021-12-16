@@ -1,17 +1,17 @@
 import React, {Component,Fragment} from 'react';
-import AttendancePhotoCapture from "../Components/AttendancePhotoCapture";
+import Attendance from "../Components/Attendance";
 import Menu from "../Components/Menu";
 
-class AttendancePhotoCapturePage extends Component {
+class AttendancePage extends Component {
     render() {
         return (
             <Fragment>
                 <Menu/>
                 <br/>
-                <AttendancePhotoCapture/>
+                <Attendance/>
             </Fragment>
         );
     }
 }
 
-export default AttendancePhotoCapturePage;
+export default AttendancePage;

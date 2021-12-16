@@ -1,6 +1,5 @@
 import React, {Component, Fragment} from 'react';
 import Menu from "../Components/Menu";
-import Axios from "axios";
 import {Card, Col, Container, ListGroup, ListGroupItem, Row} from "react-bootstrap";
 import 'react-toastify/dist/ReactToastify.css';
 import profileImage from "../Assets/Image/imagePlaceholder.svg";
@@ -64,9 +63,14 @@ class EmployeeHomePage extends Component {
                     <Menu title="Project">
                         <Container>
                             <Row>
-                                <Col className="col-md-8">
+                                <Col className="col-md-6">
                                     <Card style={{ width: '18rem' }}>
                                         <Card.Img variant="top" src={ this.state.avater } width="500" />
+                                    </Card>
+                                </Col>
+
+                                <Col className="col-md-6">
+                                    <Card style={{ width: '18rem' }}>
                                         <Card.Body>
                                             <Card.Title>Name: {employeeName}</Card.Title>
                                         </Card.Body>

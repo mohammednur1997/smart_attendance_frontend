@@ -21,10 +21,10 @@ class RegistrationInfo extends Component {
         }
     }
 
-    /*componentDidMount() {
+    componentDidMount() {
         let photoSrc= sessionStorage.getItem('photoSrc');
         this.setState({photoSrc:photoSrc})
-    }*/
+    }
 
 
     onRegistration=()=>{

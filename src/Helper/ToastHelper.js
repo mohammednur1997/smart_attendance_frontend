@@ -30,7 +30,7 @@ class ToastHelper{
     }
 
     RegistrationSuccess(){
-        cogoToast.success("Registration Success !",{position:"bottom-center"})
+        cogoToast.success("Successfully Scan image !",{position:"bottom-center"})
     }
 
     AttendanceSuccess(msg){

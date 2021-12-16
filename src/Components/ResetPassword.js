@@ -1,12 +1,10 @@
 import React, {Component,Fragment} from 'react';
-import {Col, Container, Row, Form, Button} from "react-bootstrap";
+import {Col, Container, Row, Button, Card} from "react-bootstrap";
 import Loader from "./Loader";
 import spinner from "../Assets/Image/spinner.svg";
-import imagePlaceholder from "../Assets/Image/imagePlaceholder.svg";
 import {SuccessMessage, ErrorMessage} from "../Helper/ToastHelper";
-import moment from "moment";
 import axios from "axios";
-import {onStartWorkBody, onCheckInURL,onCheckOutURL, onEndWorkBody, onResetPassBody, onResetPasswordURL} from "../APIServices/APIServices";
+import {onResetPassBody, onResetPasswordURL} from "../APIServices/APIServices";
 class ResetPassword extends Component {
 
     constructor() {
@@ -26,22 +24,29 @@ class ResetPassword extends Component {
         let newPass = this.state.newPass;
         let oldPass = this.state.oldPass;
 
-        this.setState({loaderDIV:""})
-        axios.post(onResetPasswordURL(),onResetPassBody(
-            employeeId, newPass,oldPass
-        )).then((res)=>{
-            this.setState({loaderDIV:"d-none"})
+        if (oldPass.length === 0){
+            ErrorMessage("Enter Old Password")
+        }else if(newPass.length === 0){
+            ErrorMessage("Enter New Password")
+        }else{
+            this.setState({loaderDIV:""})
+            axios.post(onResetPasswordURL(),onResetPassBody(
+                employeeId, newPass,oldPass
+            )).then((res)=>{
+                this.setState({loaderDIV:"d-none"})
 
-            if(res.data.result === "pass"){
-                SuccessMessage(res.data.message);
-            }
-            else {
-                ErrorMessage(res.data.message);
-            }
-        }).catch((err)=>{
-            this.setState({loaderDIV:"d-none"})
-            ErrorMessage("Some Want Wrong");
-        })
+                if(res.data.result === "pass"){
+                    SuccessMessage(res.data.message);
+                }
+                else {
+                    ErrorMessage(res.data.message);
+                }
+            }).catch((err)=>{
+                this.setState({loaderDIV:"d-none"})
+                ErrorMessage("Some Want Wrong");
+            })
+        }
+
     }
 
 
@@ -51,13 +56,16 @@ class ResetPassword extends Component {
             <Fragment>
                 <Container>
                     <Row className="d-flex text-center justify-content-center">
-                        <Col className="  p-3" md={4} sm={12} lg={4}>
-                            <label className="form-label text-black-50">Old Password</label>
-                            <input onChange={(e)=>this.setState({oldPass:e.target.value})} placeholder="Enter Your Old Password"  className="form-control" type="text"/>
+                        <Col className="p-3" md={4} sm={12} lg={4}>
+                            <Card.Body>
+                                <label className="form-label text-black-50">Old Password</label>
+                                <input onChange={(e)=>this.setState({oldPass:e.target.value})} placeholder="Enter Your Old Password"  className="form-control" type="text"/>
 
-                            <label className="form-label text-black-50">New Password</label>
-                            <input onChange={(e)=>this.setState({newPass:e.target.value})} placeholder="Enter Your New Password"  className="form-control" type="text"/>
-                            <Button onClick={this.ChangePass}  className="btn  mt-3 btn-danger btn-block">Change Password</Button>
+                                <label className="form-label text-black-50">New Password</label>
+                                <input onChange={(e)=>this.setState({newPass:e.target.value})} placeholder="Enter Your New Password"  className="form-control" type="text"/>
+                                <Button onClick={this.ChangePass}  className="btn  mt-3 btn-danger btn-block">Change Password</Button>
+                            </Card.Body>
+
                         </Col>
                     </Row>
                 </Container>
