@@ -37,6 +37,10 @@ class ToastHelper{
         cogoToast.success(msg,{position:"bottom-center"})
     }
 
+    RequestFail(){
+        cogoToast.success("Fail to take picture",{position:"bottom-center"})
+    }
+
 }
 
 export const {

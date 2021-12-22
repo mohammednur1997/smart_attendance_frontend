@@ -55,12 +55,13 @@ class Attendance extends Component {
                 }
                 else{
                     this.setState({PreviewSpinner:"d-none"})
-                    this.getFaceMovement();
+                   /* this.getFaceMovement();*/
                 }
             }
         })
     }
-    getFaceMovement=()=>{
+
+   /* getFaceMovement=()=>{
         setInterval(()=>{
             let FaceMovement=  JEEFACETRANSFERAPI.get_morphTargetInfluences();
             if(JEEFACETRANSFERAPI.is_detected()){
@@ -72,7 +73,7 @@ class Attendance extends Component {
 
             }
         },1000)
-    }
+    }*/
 
     onCapture=()=>{
         setTimeout(()=>{
@@ -217,6 +218,7 @@ class Attendance extends Component {
                         <Col className="text-center   p-3" md={4} sm={12} lg={4}>
                             <img className={this.state.PreviewSpinner+" w-50"} src={this.state.spinner}/>
                             {<canvas className="canvasClass" id="canvasID"/>}
+                            <button onClick={this.onCapture} className="btn m-3 text-center btn-danger">Capture</button>
                         </Col>
 
 

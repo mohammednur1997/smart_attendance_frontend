@@ -103,12 +103,13 @@ class Login extends Component {
                 }
                 else{
                     this.setState({PreviewSpinner:"d-none"})
-                    this.getFaceMovement();
+                    /*this.getFaceMovement();*/
                 }
             }
         })
     }
-    getFaceMovement=()=>{
+
+   /* getFaceMovement=()=>{
         setInterval(()=>{
             let FaceMovement=  JEEFACETRANSFERAPI.get_morphTargetInfluences();
             if(JEEFACETRANSFERAPI.is_detected()){
@@ -117,10 +118,10 @@ class Login extends Component {
                   if(RightEye>=0.75  && LeftEye>=0.75){
                       this.onCapture();
                   }
-                /*this.onCapture();*/
+                /!*this.onCapture();*!/
             }
         },1000)
-    }
+    }*/
 
     onCapture=()=>{
         setTimeout(()=>{
@@ -225,11 +226,12 @@ class Login extends Component {
                         <Col className="text-center   p-3" md={4} sm={12} lg={4}>
                             <img className={this.state.PreviewSpinner+" w-50"} src={this.state.spinner}/>
                             {<canvas className="canvasClass" id="canvasID"/>}
+                            <button onClick={this.onCapture} className="btn m-3 btn-danger">Capture</button>
                         </Col>
 
                         <Col className="text-center" md={4} sm={12} lg={4}>
                             <img id="PersonPhoto" className="preview-img" src={this.state.photoSrc}/>
-                            <button onClick={this.AttendancePhotoDesCal} className="btn m-3 btn-block btn-danger">Login with Face</button>
+                            <button onClick={this.AttendancePhotoDesCal} className="btn m-3 btn-danger">Login with Face</button>
                         </Col>
 
                         <Col className="  p-3" md={4} sm={12} lg={4}>
