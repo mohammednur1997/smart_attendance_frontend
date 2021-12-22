@@ -1,5 +1,5 @@
 import React, {Component,Fragment} from 'react';
-import {Col, Container, Row, Form, Button} from "react-bootstrap";
+import {Col, Container, Row} from "react-bootstrap";
 import Loader from "./Loader";
 import spinner from "../Assets/Image/spinner.svg";
 import imagePlaceholder from "../Assets/Image/imagePlaceholder.svg";
@@ -35,6 +35,7 @@ class Attendance extends Component {
         this.cameraRef=React.createRef();
     }
     componentDidMount() {
+
         this.OpenWebGLCamera();
         let EmpList =  JSON.parse(localStorage.getItem('list'))
         this.setState({EmpList:EmpList});
@@ -49,7 +50,7 @@ class Attendance extends Component {
             isMirror:true,
             callbackReady:(err)=>{
                 if(err){
-                    console.log(err);
+                    window.location.reload();
                     this.onCameraError()
                 }
                 else{
@@ -97,8 +98,13 @@ class Attendance extends Component {
                 const img=document.getElementById('PersonPhoto')
                 const imgDes= await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
 
-                this.setState({AttendancePhoto_descriptor:imgDes['descriptor']})
-                this.FaceMatchingResult(value);
+                try {
+                    this.setState({AttendancePhoto_descriptor:imgDes['descriptor']})
+                    this.FaceMatchingResult(value);
+                }catch (e) {
+                    this.setState({loaderDIV:"d-none"})
+                    ErrorMessage("Take a Clear Picture")
+                }
 
             })()
         }

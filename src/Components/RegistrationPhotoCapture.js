@@ -4,7 +4,7 @@ import JEEFACETRANSFERAPI from '../WebGL1/jeelizFaceTransfer.module';
 import Webcam from "react-webcam";
 import SweetAlert from "react-bootstrap-sweetalert";
 import {Redirect} from "react-router";
-import {RegistrationSuccess, RequestFail, RequiredPhoto} from "../Helper/ToastHelper";
+import {ErrorMessage, RegistrationSuccess, RequestFail, RequiredPhoto} from "../Helper/ToastHelper";
 import imagePlaceholder from '../Assets/Image/imagePlaceholder.svg'
 import spinner from '../Assets/Image/spinner.svg'
 import axios from "axios";
@@ -41,7 +41,7 @@ class RegistrationPhotoCapture extends Component {
             isMirror:true,
             callbackReady:(err)=>{
                 if(err){
-                    console.log(err);
+                    window.location.reload();
                     this.onCameraError()
                 }
                 else{
@@ -131,8 +131,16 @@ class RegistrationPhotoCapture extends Component {
             await  faceapi.loadFaceRecognitionModel('/model1');
             const img = document.getElementById('PersonPhoto')
             const imgDes= await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
-            let photo_descriptor= JSON.stringify(Array.from(imgDes['descriptor']))
-            this.postRegistrationData(employee_id,photo_descriptor)
+
+            try {
+                let photo_descriptor= JSON.stringify(Array.from(imgDes['descriptor']))
+                this.postRegistrationData(employee_id,photo_descriptor)
+            }catch (e) {
+                this.setState({loaderDIV:"d-none"})
+                ErrorMessage("Take a Clear Picture")
+            }
+
+
         })()
     }
 

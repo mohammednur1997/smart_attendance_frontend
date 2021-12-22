@@ -30,7 +30,7 @@ class Login extends Component {
             photoSrc:imagePlaceholder,
             CameraError:false,
             Redirect:false,
-            EPhoto:"",
+            EPhoto:false,
             AttendancePhoto_descriptor:[],
             EmpList:[],
         }
@@ -43,6 +43,7 @@ class Login extends Component {
         let EmpList =  JSON.parse(localStorage.getItem('list'))
         this.setState({EmpList:EmpList});
     }
+
 
     getEmployeeList=()=>{
         axios.get(onListURL()).then((res)=>{
@@ -97,7 +98,7 @@ class Login extends Component {
             isMirror:true,
             callbackReady:(err)=>{
                 if(err){
-                    console.log(err);
+                    window.location.reload();
                     this.onCameraError()
                 }
                 else{
@@ -133,19 +134,28 @@ class Login extends Component {
 
 
     AttendancePhotoDesCal=()=>{
+        if(this.state.EPhoto === false){
+            ErrorMessage("Take a picture to close your eye")
+        }else{
         (async ()=>{
             this.setState({loaderDIV:""})
             await  faceapi.loadSsdMobilenetv1Model('/model1');
             await  faceapi.loadFaceLandmarkModel('/model1');
             await  faceapi.loadFaceRecognitionModel('/model1');
             const img=document.getElementById('PersonPhoto')
-            const imgDes= await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
 
-            this.setState({AttendancePhoto_descriptor:imgDes['descriptor']})
-            this.FaceMatchingResult();
+            try {
+                const imgDes= await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
+                this.setState({AttendancePhoto_descriptor:imgDes['descriptor']})
+                this.FaceMatchingResult();
+            }catch (e) {
+                this.setState({loaderDIV:"d-none"})
+                ErrorMessage("Take a Clear Picture")
+            }
 
         })()
 
+    }
     }
 
 
